@@ -1,5 +1,5 @@
 {
-  "name": "multireddit-editor",
+  "name": "custom-feed-bulk-editor",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.21.4",
     "core-js": "^3.6.5",
+    "primeicons": "^4.1.0",
+    "primevue": "^3.7.2",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0"
   },

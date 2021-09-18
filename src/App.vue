@@ -1,10 +1,11 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
   <router-view />
 </template>
+
+<script setup lang="ts">
+import axios from "axios";
+axios.defaults.baseURL = "https://oauth.reddit.com";
+</script>
 
 <style>
 #app {
