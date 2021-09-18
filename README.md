@@ -1,4 +1,4 @@
-# multireddit-editor
+# custom-feed-bulk-editor
 
 ## Project setup
 ```
