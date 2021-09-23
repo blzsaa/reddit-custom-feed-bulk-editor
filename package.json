@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
+    "pinia": "^2.0.0-rc.8",
     "primeicons": "^4.1.0",
     "primevue": "^3.7.2",
     "vue": "^3.0.0",

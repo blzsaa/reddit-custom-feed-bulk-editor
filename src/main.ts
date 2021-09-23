@@ -6,5 +6,6 @@ import PrimeVue from "primevue/config";
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
+import { createPinia } from "pinia";
 
-createApp(App).use(router).use(PrimeVue).mount("#app");
+createApp(App).use(createPinia()).use(router).use(PrimeVue).mount("#app");
