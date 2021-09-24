@@ -17,13 +17,13 @@
 import Button from "primevue/button/sfc";
 
 function redirectToRedditAuthenticationPage() {
-  const authenticationUrl =
+  // send the user to the authentication url
+  window.location.href =
     "https://www.reddit.com/api/v1/authorize?" +
     `client_id=${process.env.VUE_APP_CLIENT_ID}` +
     `&response_type=${process.env.VUE_APP_RESPONSE_TYPE}` +
     `&state=${process.env.VUE_APP_STATE}` +
     `&redirect_uri=${encodeURIComponent(process.env.VUE_APP_REDIRECT_URI)}` +
     `&scope=mysubreddits%20read`;
-  window.location.href = authenticationUrl; // send the user to the authentication url
 }
 </script>

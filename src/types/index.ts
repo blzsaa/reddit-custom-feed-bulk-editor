@@ -6,9 +6,7 @@ export class MultiReddit {
   constructor(public display_name: string, public subreddits: string[]) {}
 }
 
-export class Asd {
-  constructor(public display_name: string, public asd: Map<string, string>) {}
-}
-export class Row {
-  constructor(public header: string, public field: string) {}
+export interface DataTableFilter {
+  name: { value: null; matchMode: string | undefined };
+  [key: string]: { value: null; matchMode: string | undefined };
 }

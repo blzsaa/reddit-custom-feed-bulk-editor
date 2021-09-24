@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { MultiReddit, Subreddit } from "@/types/Subreddit";
+import { MultiReddit, Subreddit } from "@/types";
 
 export class RedditApi {
   private instance: AxiosInstance;
@@ -29,7 +29,7 @@ export class RedditApi {
       after = response.data.data.after;
       result = result.concat(response.data.data.children.map((c) => c.data));
       i++;
-    } while (after !== null && i < 10);
+    } while (after !== null && i < 100);
     return result;
   }
 
