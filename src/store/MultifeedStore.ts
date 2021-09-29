@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
 import { RedditApi } from "@/api/RedditApi";
 import { FilterMatchMode } from "primevue/api";
-import { DataTableFilter } from "@/types";
+import { DataTableFilter, Action } from "@/types";
 
 export const useMultiFeedStore = defineStore("multi-feed", {
   state: () => ({
     accessToken: undefined as string | undefined,
     headers: [] as string[],
     dataTableContent: [] as { name: string }[],
+    subredditChanges: new Map<string, Action>(),
     filters: {
       name: { value: null, matchMode: FilterMatchMode.CONTAINS },
     } as DataTableFilter,
@@ -26,7 +27,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     },
     async readMultiFeedInformationFromReddit() {
       if (this.accessToken === undefined) {
-        throw { error: "accessToken is missing" };
+        throw new Error("accessToken is missing");
       }
       const redditApi = new RedditApi(this.accessToken);
       const [subreddits, multis] = await Promise.all([
@@ -90,6 +91,37 @@ export const useMultiFeedStore = defineStore("multi-feed", {
             name: { value: null, matchMode: FilterMatchMode.CONTAINS },
           } as DataTableFilter
         );
+    },
+    changeSubscriptionStatus(name: string, newValue: boolean) {
+      if (newValue) {
+        this.subredditChanges.set(name, Action.Subscribe);
+      } else {
+        this.subredditChanges.set(name, Action.Unsubscribe);
+      }
+    },
+    async commitChanges() {
+      const subredditsToSubscribe = [] as string[];
+      const subredditsToUnsubscribe = [] as string[];
+      this.subredditChanges.forEach((v, k) => {
+        v === Action.Subscribe
+          ? subredditsToSubscribe.push(k)
+          : subredditsToUnsubscribe.push(k);
+      });
+      if (this.accessToken === undefined) {
+        throw new Error("accessToken is missing");
+      }
+      const redditApi = new RedditApi(this.accessToken);
+      const promises = [] as Promise<void>[];
+      if (subredditsToSubscribe.length !== 0) {
+        const toSubscribe = subredditsToSubscribe.join(",");
+        promises.push(redditApi.subscribeToSubreddits(toSubscribe));
+      }
+      if (subredditsToUnsubscribe.length !== 0) {
+        const toUnsubscribe = subredditsToUnsubscribe.join(",");
+        promises.push(redditApi.unsubscribeToSubreddits(toUnsubscribe));
+      }
+      await Promise.all(promises);
+      this.subredditChanges.clear();
     },
   },
 });

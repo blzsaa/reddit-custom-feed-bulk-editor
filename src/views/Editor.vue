@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Button class="p-button-rounded" @click="save()">Save</Button>
     <data-table
       :value="dataTableContent"
       responsiveLayout="scroll"
@@ -14,7 +15,9 @@
       <template #loading>Loading subreddits-multis relationships.</template>
       <column field="name" header="name">
         <template #body="{ data }">
-          {{ data.name }}
+          <a :href="`https://www.reddit.com/r/${data.name}`" target="_blank">{{
+            data.name
+          }}</a>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <input-text
@@ -35,13 +38,13 @@
         dataType="boolean"
       >
         <template #body="slotProps">
-          <em
-            class="pi"
-            :class="{
-              'true-icon pi-check-circle': slotProps.data[col],
-              'false-icon pi-times-circle': !slotProps.data[col],
-            }"
-          ></em>
+          <Checkbox
+            id="binary"
+            v-model="slotProps.data[col]"
+            :binary="true"
+            @update:modelValue="onCellEdit($event, slotProps)"
+            :disabled="col !== 'subscribed'"
+          />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <tri-state-checkbox
@@ -62,6 +65,8 @@ import DataTable from "primevue/datatable/sfc";
 import Column from "primevue/column/sfc";
 import InputText from "primevue/inputtext/sfc";
 import TriStateCheckbox from "primevue/tristatecheckbox/sfc";
+import Checkbox from "primevue/checkbox/sfc";
+import Button from "primevue/button/sfc";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { DataTableFilter } from "@/types";
 
@@ -100,13 +105,17 @@ onMounted(async () => {
   filters.value = multiFeedStore.filters;
   isLoading.value = false;
 });
-</script>
 
-<style>
-.false-icon {
-  color: darkred;
+const onCellEdit = (
+  newValue: boolean,
+  props: { column: { props: { field: string } }; data: { name: string } }
+) => {
+  multiFeedStore.changeSubscriptionStatus(props.data.name, newValue);
+};
+
+function save() {
+  isLoading.value = true;
+  multiFeedStore.commitChanges();
+  isLoading.value = false;
 }
-.true-icon {
-  color: green;
-}
-</style>
+</script>

@@ -24,6 +24,6 @@ function redirectToRedditAuthenticationPage() {
     `&response_type=${process.env.VUE_APP_RESPONSE_TYPE}` +
     `&state=${process.env.VUE_APP_STATE}` +
     `&redirect_uri=${encodeURIComponent(process.env.VUE_APP_REDIRECT_URI)}` +
-    `&scope=mysubreddits%20read`;
+    `&scope=mysubreddits%20read%20subscribe`;
 }
 </script>

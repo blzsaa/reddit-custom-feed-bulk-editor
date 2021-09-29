@@ -48,4 +48,30 @@ export class RedditApi {
         )
     );
   }
+
+  public async subscribeToSubreddits(subreddits: string): Promise<void> {
+    return this.instance.post(
+      "/api/subscribe",
+      {},
+      {
+        params: {
+          action: "sub",
+          sr_name: subreddits,
+        },
+      }
+    );
+  }
+
+  public async unsubscribeToSubreddits(subreddits: string): Promise<void> {
+    return this.instance.post(
+      "/api/subscribe",
+      {},
+      {
+        params: {
+          action: "unsub",
+          sr_name: subreddits,
+        },
+      }
+    );
+  }
 }
