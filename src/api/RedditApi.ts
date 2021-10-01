@@ -36,7 +36,11 @@ export class RedditApi {
   public async getMultiMine(): Promise<MultiReddit[]> {
     const response: {
       data: {
-        data: { display_name: string; subreddits: { name: string }[] };
+        data: {
+          display_name: string;
+          path: string;
+          subreddits: { name: string }[];
+        };
       }[];
     } = await this.instance.get("/api/multi/mine");
 
@@ -44,6 +48,7 @@ export class RedditApi {
       (d) =>
         new MultiReddit(
           d.data.display_name,
+          d.data.path,
           d.data.subreddits.map((a) => a.name)
         )
     );

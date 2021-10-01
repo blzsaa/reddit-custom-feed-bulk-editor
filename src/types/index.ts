@@ -3,7 +3,11 @@ export class Subreddit {
 }
 
 export class MultiReddit {
-  constructor(public display_name: string, public subreddits: string[]) {}
+  constructor(
+    public display_name: string,
+    public path: string,
+    public subreddits: string[]
+  ) {}
 }
 
 export interface DataTableFilter {
@@ -15,3 +19,11 @@ export enum Action {
   Subscribe = "Subscribe",
   Unsubscribe = "Unsubscribe",
 }
+
+export type DatatableRow = {
+  name: string;
+  subscribed: boolean;
+  [key: string]: boolean | string;
+};
+
+export type NullableUndefinableBoolean = boolean | null | undefined;

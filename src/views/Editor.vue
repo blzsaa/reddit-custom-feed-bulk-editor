@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="dataTableContent.length > 0">
     <Button class="p-button-rounded" @click="save()">Save</Button>
     <data-table
       :value="dataTableContent"
@@ -13,7 +13,7 @@
         >Did not found any subscribed subreddits nor any multis.</template
       >
       <template #loading>Loading subreddits-multis relationships.</template>
-      <column field="name" header="name">
+      <column field="name" header="name" key="name">
         <template #body="{ data }">
           <a :href="`https://www.reddit.com/r/${data.name}`" target="_blank">{{
             data.name
@@ -31,19 +31,39 @@
         </template>
       </column>
       <column
-        v-for="col of headers.filter((a) => a !== 'name')"
-        :field="col"
-        :header="col"
-        :key="col"
+        field="subscribed"
+        header="subscribed"
+        key="subscribed"
+        dataType="boolean"
+      >
+        <template #body="{ data }">
+          <Checkbox
+            id="binary"
+            v-model="data.subscribed"
+            :binary="true"
+            @update:modelValue="onChangeSubscriptionStatus($event, data)"
+          />
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <TriStateCheckbox
+            v-model="filterModel.value"
+            @change="filterCallback()"
+          />
+        </template>
+      </column>
+      <column
+        v-for="multi of nameOfMultis"
+        :field="multi"
+        :header="multi"
+        :key="multi"
         dataType="boolean"
       >
         <template #body="slotProps">
           <Checkbox
             id="binary"
-            v-model="slotProps.data[col]"
+            v-model="slotProps.data[multi]"
             :binary="true"
-            @update:modelValue="onCellEdit($event, slotProps)"
-            :disabled="col !== 'subscribed'"
+            :disabled="true"
           />
         </template>
         <template #filter="{ filterModel, filterCallback }">
@@ -60,7 +80,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { onMounted } from "@vue/runtime-core";
-import { FilterMatchMode, FilterService } from "primevue/api";
+import { FilterService } from "primevue/api";
 import DataTable from "primevue/datatable/sfc";
 import Column from "primevue/column/sfc";
 import InputText from "primevue/inputtext/sfc";
@@ -68,14 +88,13 @@ import TriStateCheckbox from "primevue/tristatecheckbox/sfc";
 import Checkbox from "primevue/checkbox/sfc";
 import Button from "primevue/button/sfc";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
-import { DataTableFilter } from "@/types";
+import { DatatableRow, DataTableFilter } from "@/types";
+import { filterEitherTrueOrNullValues } from "@/service/DataTableCustomFilterService";
 
-const headers = ref<string[]>([]);
+const nameOfMultis = ref<string[]>([]);
 const isLoading = ref<boolean>(false);
-const dataTableContent = ref<{ name: string }[]>([]);
-const filters = ref<DataTableFilter>({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
+const dataTableContent = ref<DatatableRow[]>([]);
+const filters = ref<DataTableFilter>({});
 const multiFeedStore = useMultiFeedStore();
 
 onMounted(async () => {
@@ -83,34 +102,23 @@ onMounted(async () => {
 
   FilterService.register(
     "filterEitherTrueOrNullValues",
-    (
-      valueToBeFiltered: boolean | null | undefined,
-      filterValue: boolean | null | undefined
-    ) => {
-      if (filterValue === null || filterValue === undefined) {
-        return true;
-      } else if (filterValue) {
-        return valueToBeFiltered;
-      } else {
-        return !valueToBeFiltered;
-      }
-    }
+    filterEitherTrueOrNullValues
   );
 
   multiFeedStore.extractAccessToken(window.location);
   await multiFeedStore.readMultiFeedInformationFromReddit();
 
   dataTableContent.value = multiFeedStore.dataTableContent;
-  headers.value = multiFeedStore.headers;
+  nameOfMultis.value = multiFeedStore.nameOfMultis;
   filters.value = multiFeedStore.filters;
   isLoading.value = false;
 });
 
-const onCellEdit = (
-  newValue: boolean,
-  props: { column: { props: { field: string } }; data: { name: string } }
+const onChangeSubscriptionStatus = (
+  newStatus: boolean,
+  props: { name: string }
 ) => {
-  multiFeedStore.changeSubscriptionStatus(props.data.name, newValue);
+  multiFeedStore.changeSubscriptionStatus(props.name, newStatus);
 };
 
 function save() {
