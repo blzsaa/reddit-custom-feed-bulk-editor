@@ -3,6 +3,9 @@
     <Button class="p-button-rounded" @click="save()">Save</Button>
     <data-table
       :value="dataTableContent"
+      removableSort
+      sortMode="multiple"
+      :multiSortMeta="multiSortMeta"
       responsiveLayout="scroll"
       :reorderableColumns="true"
       v-model:filters="filters"
@@ -13,7 +16,7 @@
         >Did not found any subscribed subreddits nor any multis.</template
       >
       <template #loading>Loading subreddits-multis relationships.</template>
-      <column field="name" header="name" key="name">
+      <column field="name" header="name" key="name" :sortable="true">
         <template #body="{ data }">
           <a :href="`https://www.reddit.com/r/${data.name}`" target="_blank">{{
             data.name
@@ -34,6 +37,7 @@
         field="subscribed"
         header="subscribed"
         key="subscribed"
+        :sortable="true"
         dataType="boolean"
       >
         <template #body="{ data }">
@@ -56,6 +60,7 @@
         :field="multi"
         :header="multi"
         :key="multi"
+        :sortable="true"
         dataType="boolean"
       >
         <template #body="slotProps">
@@ -96,7 +101,9 @@ const isLoading = ref<boolean>(false);
 const dataTableContent = ref<DatatableRow[]>([]);
 const filters = ref<DataTableFilter>({});
 const multiFeedStore = useMultiFeedStore();
-
+const multiSortMeta = ref<{ field: string; order: number }[]>([
+  { field: "name", order: 1 },
+]);
 onMounted(async () => {
   isLoading.value = true;
 

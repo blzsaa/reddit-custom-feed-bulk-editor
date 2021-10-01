@@ -40,11 +40,17 @@ export class MultisService {
     subreddits: Subreddit[],
     multis: MultiReddit[]
   ): DatatableRow[] {
+    const dummyDataTableRow = { name: "", subscribed: false } as DatatableRow;
+    multis.forEach((m) => (dummyDataTableRow[m.display_name] = false));
+
     const subscribedSubreddits: Map<
       string,
       { name: string; subscribed: boolean }
     > = subreddits.reduce((l, w) => {
-      l.set(w.display_name, { name: w.display_name, subscribed: true });
+      l.set(w.display_name, {
+        ...dummyDataTableRow,
+        ...{ name: w.display_name, subscribed: true },
+      });
       return l;
     }, new Map());
 
@@ -56,9 +62,12 @@ export class MultisService {
             obj[multi.display_name] = true;
           } else {
             map.set(subreddit, {
-              name: subreddit,
-              subscribed: false,
-              [multi.display_name]: true,
+              ...dummyDataTableRow,
+              ...{
+                name: subreddit,
+                subscribed: false,
+                [multi.display_name]: true,
+              },
             });
           }
         }
