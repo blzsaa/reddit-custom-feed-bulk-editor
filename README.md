@@ -1,4 +1,4 @@
-# custom-feed-bulk-editor
+# reddit-custom-feed-bulk-editor
 
 ## Project setup
 ```

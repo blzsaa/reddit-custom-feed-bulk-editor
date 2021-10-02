@@ -1,8 +1,8 @@
 <template>
   <div class="hello">
     <p>
-      To use this page you first have to allow custom-feed-bulk-editor to access
-      which subreddits and multireddits you are subscriber to.
+      To use this page you first have to allow reddit-custom-feed-bulk-editor to
+      access which subreddits and multireddits you are subscriber to.
     </p>
     <Button
       class="p-button-rounded"
