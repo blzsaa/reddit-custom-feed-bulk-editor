@@ -17,13 +17,17 @@
 import Button from "primevue/button/sfc";
 
 function redirectToRedditAuthenticationPage() {
+  const redirectUri = "http://localhost:8080/authorize_callback";
+  const responseType = "token";
+  const state = "STATE";
+  const scopes = ["mysubreddits", "read", "subscribe"];
   // send the user to the authentication url
   window.location.href =
     "https://www.reddit.com/api/v1/authorize?" +
     `client_id=${process.env.VUE_APP_CLIENT_ID}` +
-    `&response_type=${process.env.VUE_APP_RESPONSE_TYPE}` +
-    `&state=${process.env.VUE_APP_STATE}` +
-    `&redirect_uri=${encodeURIComponent(process.env.VUE_APP_REDIRECT_URI)}` +
-    `&scope=mysubreddits%20read%20subscribe`;
+    `&response_type=${responseType}` +
+    `&state=${state}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&scope=${encodeURIComponent(scopes.join(" "))}`;
 }
 </script>
