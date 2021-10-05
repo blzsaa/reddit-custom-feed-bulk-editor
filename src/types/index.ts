@@ -6,7 +6,7 @@ export class MultiReddit {
   constructor(
     public display_name: string,
     public path: string,
-    public subreddits: string[]
+    public subreddits: Set<string>
   ) {}
 }
 
