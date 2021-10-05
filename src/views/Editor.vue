@@ -68,7 +68,9 @@
             id="binary"
             v-model="slotProps.data[multi]"
             :binary="true"
-            :disabled="true"
+            @update:modelValue="
+              onChangeCustomFeedStatus(multi, slotProps.data.name, $event)
+            "
           />
         </template>
         <template #filter="{ filterModel, filterCallback }">
@@ -126,6 +128,18 @@ const onChangeSubscriptionStatus = (
   props: { name: string }
 ) => {
   multiFeedStore.changeSubscriptionStatus(props.name, newStatus);
+};
+
+const onChangeCustomFeedStatus = (
+  nameOfTheMulti: string,
+  nameOfTheSubreddit: boolean,
+  newStatus: boolean
+) => {
+  multiFeedStore.changeCustomFeedStatus(
+    nameOfTheMulti,
+    nameOfTheSubreddit,
+    newStatus
+  );
 };
 
 function save() {

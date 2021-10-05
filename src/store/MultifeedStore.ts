@@ -17,6 +17,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     subredditChanges: new Map<string, Action>(),
     subreddits: [] as Subreddit[],
     multis: [] as MultiReddit[],
+    changedMultis: new Set<MultiReddit>(),
     multisService: {} as MultisService,
     filters: {} as DataTableFilter,
   }),
@@ -47,8 +48,28 @@ export const useMultiFeedStore = defineStore("multi-feed", {
         this.subredditChanges.set(name, Action.Unsubscribe);
       }
     },
+    changeCustomFeedStatus(
+      nameOfTheMulti: string,
+      nameOfTheSubreddit: string,
+      newStatus: boolean
+    ) {
+      this.multis
+        .filter((a) => a.display_name == nameOfTheMulti)
+        .forEach((find) => {
+          this.changedMultis.add(find);
+          if (newStatus) {
+            find.subreddits.add(nameOfTheSubreddit);
+          } else {
+            find.subreddits.delete(nameOfTheSubreddit);
+          }
+        });
+    },
     async commitChanges() {
-      await this.multisService.commitChanges(this.subredditChanges);
+      await this.multisService.commitChanges(
+        this.subredditChanges,
+        Array.from(this.changedMultis)
+      );
+      this.changedMultis.clear();
       this.subredditChanges.clear();
     },
   },

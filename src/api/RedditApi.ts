@@ -49,7 +49,7 @@ export class RedditApi {
         new MultiReddit(
           d.data.display_name,
           d.data.path,
-          d.data.subreddits.map((a) => a.name)
+          new Set<string>(d.data.subreddits.map((a) => a.name))
         )
     );
   }
@@ -75,6 +75,23 @@ export class RedditApi {
         params: {
           action: "unsub",
           sr_name: subreddits,
+        },
+      }
+    );
+  }
+
+  public async updateMulti(
+    multiPath: string,
+    subreddits: { name: string }[]
+  ): Promise<void> {
+    return this.instance.put(
+      `/api/multi${multiPath}`,
+      {},
+      {
+        params: {
+          model: {
+            subreddits: subreddits,
+          },
         },
       }
     );

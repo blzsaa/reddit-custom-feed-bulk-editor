@@ -16,7 +16,10 @@ export class MultisService {
     return multis.map((m) => m.display_name);
   }
 
-  commitChanges(subredditChanges: Map<string, Action>): Promise<void[]> {
+  commitChanges(
+    subredditChanges: Map<string, Action>,
+    customFeedWithChanges: MultiReddit[]
+  ): Promise<void[]> {
     const subredditsToSubscribe = [] as string[];
     const subredditsToUnsubscribe = [] as string[];
     subredditChanges.forEach((v, k) => {
@@ -24,7 +27,12 @@ export class MultisService {
         ? subredditsToSubscribe.push(k)
         : subredditsToUnsubscribe.push(k);
     });
-    const promises = [] as Promise<void>[];
+    const promises: Promise<void>[] = customFeedWithChanges.map((m) =>
+      this.redditApi.updateMulti(
+        m.path,
+        Array.from(m.subreddits).map((s) => ({ name: s }))
+      )
+    );
     if (subredditsToSubscribe.length !== 0) {
       const toSubscribe = subredditsToSubscribe.join(",");
       promises.push(this.redditApi.subscribeToSubreddits(toSubscribe));
