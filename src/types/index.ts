@@ -1,5 +1,5 @@
 export class Subreddit {
-  constructor(public display_name: string, public description_html: string) {}
+  constructor(public display_name: string) {}
 }
 
 export class MultiReddit {
@@ -25,5 +25,3 @@ export type DatatableRow = {
   subscribed: boolean;
   [key: string]: boolean | string;
 };
-
-export type NullableUndefinableBoolean = boolean | null | undefined;

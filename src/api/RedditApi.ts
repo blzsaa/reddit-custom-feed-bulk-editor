@@ -1,17 +1,11 @@
-import axios, { AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 import { MultiReddit, Subreddit } from "@/types";
 
 export class RedditApi {
   private instance: AxiosInstance;
 
-  constructor(token: string) {
-    this.instance = axios.create({
-      baseURL: "https://oauth.reddit.com",
-      timeout: 5000,
-      headers: {
-        Authorization: "bearer " + token,
-      },
-    });
+  constructor(instance: AxiosInstance) {
+    this.instance = instance;
   }
 
   public async getSubscribedSubreddits(): Promise<Subreddit[]> {

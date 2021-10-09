@@ -1,5 +1,6 @@
 import { RedditApi } from "@/api/RedditApi";
 import { MultisService } from "@/service/MultisService";
+import axios from "axios";
 
 export class MultisServiceFactory {
   public extractAccessToken(location: Location): MultisService {
@@ -15,6 +16,13 @@ export class MultisServiceFactory {
     if (accessToken === undefined) {
       throw new Error("accessToken is missing");
     }
-    return new MultisService(new RedditApi(accessToken));
+    const axiosInstance = axios.create({
+      baseURL: "https://oauth.reddit.com",
+      timeout: 5000,
+      headers: {
+        Authorization: "bearer " + accessToken,
+      },
+    });
+    return new MultisService(new RedditApi(axiosInstance));
   }
 }

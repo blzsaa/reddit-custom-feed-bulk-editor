@@ -87,7 +87,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { onMounted } from "@vue/runtime-core";
-import { FilterService } from "primevue/api";
 import DataTable from "primevue/datatable/sfc";
 import Column from "primevue/column/sfc";
 import InputText from "primevue/inputtext/sfc";
@@ -96,23 +95,17 @@ import Checkbox from "primevue/checkbox/sfc";
 import Button from "primevue/button/sfc";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { DatatableRow, DataTableFilter } from "@/types";
-import { filterEitherTrueOrNullValues } from "@/service/DataTableCustomFilterService";
 
 const nameOfMultis = ref<string[]>([]);
 const isLoading = ref<boolean>(false);
 const dataTableContent = ref<DatatableRow[]>([]);
-const filters = ref<DataTableFilter>({});
+const filters = ref<DataTableFilter | undefined>(undefined);
 const multiFeedStore = useMultiFeedStore();
 const multiSortMeta = ref<{ field: string; order: number }[]>([
   { field: "name", order: 1 },
 ]);
 onMounted(async () => {
   isLoading.value = true;
-
-  FilterService.register(
-    "filterEitherTrueOrNullValues",
-    filterEitherTrueOrNullValues
-  );
 
   multiFeedStore.extractAccessToken(window.location);
   await multiFeedStore.readMultiFeedInformationFromReddit();
@@ -132,7 +125,7 @@ const onChangeSubscriptionStatus = (
 
 const onChangeCustomFeedStatus = (
   nameOfTheMulti: string,
-  nameOfTheSubreddit: boolean,
+  nameOfTheSubreddit: string,
   newStatus: boolean
 ) => {
   multiFeedStore.changeCustomFeedStatus(
