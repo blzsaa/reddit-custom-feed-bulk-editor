@@ -1,11 +1,5 @@
-import {
-  DataTableFilter,
-  MultiReddit,
-  NullableUndefinableBoolean,
-} from "@/types";
+import { DataTableFilter, MultiReddit } from "@/types";
 import { FilterMatchMode } from "primevue/api";
-
-export const FILTER_EITHER_TRUE_OR_NULL_VALUES = "filterEitherTrueOrNullValues";
 
 export const generateFiltersForDataTable: (
   multis: MultiReddit[]
@@ -16,7 +10,7 @@ export const generateFiltersForDataTable: (
       (filterObject, a) => {
         filterObject[a] = {
           value: null,
-          matchMode: FILTER_EITHER_TRUE_OR_NULL_VALUES,
+          matchMode: FilterMatchMode.EQUALS,
         };
         return filterObject;
       },
@@ -24,21 +18,8 @@ export const generateFiltersForDataTable: (
         name: { value: null, matchMode: FilterMatchMode.CONTAINS },
         subscribed: {
           value: null,
-          matchMode: FILTER_EITHER_TRUE_OR_NULL_VALUES,
+          matchMode: FilterMatchMode.EQUALS,
         },
       } as DataTableFilter
     );
 };
-
-export function filterEitherTrueOrNullValues(
-  valueToBeFiltered: NullableUndefinableBoolean,
-  filterValue: NullableUndefinableBoolean
-): boolean | null | undefined {
-  if (filterValue === null || filterValue === undefined) {
-    return true;
-  } else if (filterValue) {
-    return valueToBeFiltered;
-  } else {
-    return !valueToBeFiltered;
-  }
-}
