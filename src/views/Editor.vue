@@ -18,9 +18,12 @@
       <template #loading>Loading subreddits-multis relationships.</template>
       <column field="name" header="name" key="name" :sortable="true">
         <template #body="{ data }">
-          <a :href="`https://www.reddit.com/r/${data.name}`" target="_blank">{{
-            data.name
-          }}</a>
+          <a
+            :class="data.name + '_name'"
+            :href="`https://www.reddit.com/r/${data.name}`"
+            target="_blank"
+            >{{ data.name }}
+          </a>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <input-text
@@ -42,6 +45,7 @@
       >
         <template #body="{ data }">
           <Checkbox
+            :class="data.name + '_subscribed'"
             id="binary"
             v-model="data.subscribed"
             :binary="true"
@@ -67,6 +71,7 @@
           <Checkbox
             id="binary"
             v-model="slotProps.data[multi]"
+            :class="slotProps.data.name + '_' + multi"
             :binary="true"
             @update:modelValue="
               onChangeCustomFeedStatus(multi, slotProps.data.name, $event)
