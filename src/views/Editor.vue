@@ -20,7 +20,7 @@
         <template #body="{ data }">
           <a
             :class="data.name + '_name'"
-            :href="`https://www.reddit.com/r/${data.name}`"
+            :href="subredditLink(data.name)"
             target="_blank"
             >{{ data.name }}
           </a>
@@ -112,7 +112,7 @@ const multiSortMeta = ref<{ field: string; order: number }[]>([
 onMounted(async () => {
   isLoading.value = true;
 
-  multiFeedStore.extractAccessToken(window.location);
+  await multiFeedStore.extractAccessToken(window.location.href);
   await multiFeedStore.readMultiFeedInformationFromReddit();
 
   dataTableContent.value = multiFeedStore.dataTableContent;
@@ -139,6 +139,10 @@ const onChangeCustomFeedStatus = (
     newStatus
   );
 };
+
+function subredditLink(nameOfSubreddit: string) {
+  return `${process.env.VUE_APP_REDDIT_URL}/r/${nameOfSubreddit}`;
+}
 
 function save() {
   isLoading.value = true;

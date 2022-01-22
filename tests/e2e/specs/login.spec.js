@@ -17,9 +17,10 @@ describe("Login page", () => {
         "eq",
         "https://www.reddit.com/api/v1/authorize?" +
           "client_id=e2eClientId&" +
-          "response_type=token&" +
+          "response_type=code&" +
           "state=STATE&" +
           "redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauthorize_callback&" +
+          "duration=temporary&" +
           "scope=mysubreddits%20read%20subscribe"
       );
   });

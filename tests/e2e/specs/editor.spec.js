@@ -6,7 +6,25 @@ describe("Editor page", () => {
   beforeEach(() => {
     cy.intercept(
       {
-        url: "https://oauth.reddit.com/subreddits/mine/subscriber",
+        url: "https://www.mock-reddit.com/api/v1/access_token",
+        auth: {
+          username: "e2eClientId",
+          password: "",
+        },
+      },
+      (req) => {
+        req.reply({
+          statusCode: 200,
+          body: {
+            access_token: "access_token",
+          },
+        });
+      }
+    ).as("retrieving the access token");
+
+    cy.intercept(
+      {
+        url: "https://oauth.mock-reddit.com/subreddits/mine/subscriber",
         headers: {
           authorization: "bearer access_token",
         },
@@ -33,11 +51,11 @@ describe("Editor page", () => {
           },
         });
       }
-    );
+    ).as("retrieving all subreddits");
 
     cy.intercept(
       {
-        url: "https://oauth.reddit.com/api/multi/mine",
+        url: "https://oauth.mock-reddit.com/api/multi/mine",
         headers: {
           authorization: "bearer access_token",
         },
@@ -67,12 +85,12 @@ describe("Editor page", () => {
           ],
         });
       }
-    );
+    ).as("retrieving all multireddits");
   });
 
   it("should load data to a visual table", () => {
     cy.visit(
-      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
+      "/authorize_callback#code=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
     );
 
     getHeaderAt({ row: 1 }).should("contain.text", "name");
@@ -107,22 +125,22 @@ describe("Editor page", () => {
   it("should be able modify subscription and multis", () => {
     cy.intercept(
       "PUT",
-      "https://oauth.reddit.com/api/multi/user/userName/m/multi1/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit4%22%7D]%7D",
+      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi1/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit4%22%7D]%7D",
       { statusCode: 200 }
     ).as("multi1");
     cy.intercept(
       "PUT",
-      "https://oauth.reddit.com/api/multi/user/userName/m/multi2/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit1%22%7D,%7B%22name%22:%22subreddit3%22%7D]%7D",
+      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi2/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit1%22%7D,%7B%22name%22:%22subreddit3%22%7D]%7D",
       { statusCode: 200 }
     ).as("multi2");
     cy.intercept(
       "POST",
-      "https://oauth.reddit.com/api/subscribe?action=sub&sr_name=subreddit3",
+      "https://oauth.mock-reddit.com/api/subscribe?action=sub&sr_name=subreddit3",
       { statusCode: 200 }
     ).as("sub");
     cy.intercept(
       "POST",
-      "https://oauth.reddit.com/api/subscribe?action=unsub&sr_name=subreddit1",
+      "https://oauth.mock-reddit.com/api/subscribe?action=unsub&sr_name=subreddit1",
       { statusCode: 200 }
     ).as("unsub");
     cy.visit(

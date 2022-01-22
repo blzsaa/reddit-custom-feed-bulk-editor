@@ -18,17 +18,18 @@
 import Chip from "primevue/chip/sfc";
 
 function linkToRedditAuthenticationPage() {
-  const redirectUri = "http://localhost:8080/authorize_callback";
-  const responseType = "token";
+  const responseType = "code";
   const state = "STATE";
   const scopes = ["mysubreddits", "read", "subscribe"];
+  const duration = "temporary";
   // send the user to the authentication url
   return (
     "https://www.reddit.com/api/v1/authorize?" +
     `client_id=${process.env.VUE_APP_CLIENT_ID}` +
     `&response_type=${responseType}` +
     `&state=${state}` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&redirect_uri=${encodeURIComponent(process.env.VUE_APP_REDIRECT_URI)}` +
+    `&duration=${encodeURIComponent(duration)}` +
     `&scope=${encodeURIComponent(scopes.join(" "))}`
   );
 }
