@@ -7,8 +7,10 @@ import {
   Subreddit,
 } from "@/types";
 import { MultisService } from "@/service/MultisService";
-import { MultisServiceFactory } from "@/service/MultisServiceFactory";
+import { AccessTokenFactory } from "@/service/AccessTokenFactory";
 import { generateFiltersForDataTable } from "@/service/DataTableCustomFilterService";
+import axios from "axios";
+import { RedditApi } from "@/api/RedditApi";
 
 export const useMultiFeedStore = defineStore("multi-feed", {
   state: () => ({
@@ -22,10 +24,19 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     filters: {} as DataTableFilter,
   }),
   actions: {
-    extractAccessToken(location: Location) {
-      this.multisService = new MultisServiceFactory().extractAccessToken(
-        location
+    async extractAccessToken(href: string) {
+      const accessToken = await new AccessTokenFactory().extractAccessToken(
+        axios.create({ baseURL: process.env.VUE_APP_REDDIT_URL }),
+        href
       );
+      const axiosInstance = axios.create({
+        baseURL: process.env.VUE_APP_OAUTH_REDDIT_URL,
+        timeout: 5000,
+        headers: {
+          Authorization: "bearer " + accessToken,
+        },
+      });
+      this.multisService = new MultisService(new RedditApi(axiosInstance));
     },
     async readMultiFeedInformationFromReddit() {
       const [subreddits, multis] = await Promise.all([
