@@ -14,6 +14,7 @@ import { RedditApi } from "@/api/RedditApi";
 
 export const useMultiFeedStore = defineStore("multi-feed", {
   state: () => ({
+    accessToken: "" as string,
     nameOfMultis: [] as string[],
     dataTableContent: [] as DatatableRow[],
     subredditChanges: new Map<string, Action>(),
@@ -23,17 +24,22 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     multisService: {} as MultisService,
     filters: {} as DataTableFilter,
   }),
+  persist: {
+    paths: ["accessToken"],
+  },
   actions: {
     async extractAccessToken(href: string) {
-      const accessToken = await new AccessTokenFactory().extractAccessToken(
+      this.accessToken = await new AccessTokenFactory().extractAccessToken(
         axios.create({ baseURL: process.env.VUE_APP_REDDIT_URL }),
         href
       );
+    },
+    async initService() {
       const axiosInstance = axios.create({
         baseURL: process.env.VUE_APP_OAUTH_REDDIT_URL,
         timeout: 5000,
         headers: {
-          Authorization: "bearer " + accessToken,
+          Authorization: "bearer " + this.accessToken,
         },
       });
       this.multisService = new MultisService(new RedditApi(axiosInstance));
