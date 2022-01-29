@@ -44,7 +44,7 @@ describe("MultisService.ts", () => {
     it("should delegate to redditApi", async function () {
       const onfulfilled: Promise<MultiReddit[]> =
         Promise.resolve(multiRedditArray);
-      expect(redditApi.getMultiMine.returns(onfulfilled));
+      redditApi.getMultiMine.returns(onfulfilled);
 
       const actual = await multisService.getMultiMine();
 

@@ -46,7 +46,6 @@
         <template #body="{ data }">
           <Checkbox
             :class="data.name + '_subscribed'"
-            id="binary"
             v-model="data.subscribed"
             :binary="true"
             @update:modelValue="onChangeSubscriptionStatus($event, data)"
@@ -69,7 +68,6 @@
       >
         <template #body="slotProps">
           <Checkbox
-            id="binary"
             v-model="slotProps.data[multi]"
             :class="slotProps.data.name + '_' + multi"
             :binary="true"
@@ -112,7 +110,7 @@ const multiSortMeta = ref<{ field: string; order: number }[]>([
 onMounted(async () => {
   isLoading.value = true;
 
-  await multiFeedStore.extractAccessToken(window.location.href);
+  await multiFeedStore.initService();
   await multiFeedStore.readMultiFeedInformationFromReddit();
 
   dataTableContent.value = multiFeedStore.dataTableContent;
