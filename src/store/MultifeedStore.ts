@@ -3,6 +3,7 @@ import {
   Action,
   DataTableFilter,
   DatatableRow,
+  LoadingStatsCallback,
   MultiReddit,
   Subreddit,
 } from "@/types";
@@ -44,11 +45,27 @@ export const useMultiFeedStore = defineStore("multi-feed", {
       });
       this.multisService = new MultisService(new RedditApi(axiosInstance));
     },
-    async readMultiFeedInformationFromReddit() {
+    async readMultiFeedInformationFromReddit(
+      callbackFunction: (stats: LoadingStatsCallback) => void
+    ) {
       const [subreddits, multis] = await Promise.all([
-        this.multisService.getSubscribedSubreddits(),
-        this.multisService.getMultiMine(),
+        this.multisService
+          .getSubscribedSubreddits((n) =>
+            callbackFunction({
+              kind: "LoadedSubreddits",
+              loadedSubreddits: n,
+            })
+          )
+          .then((m) => {
+            callbackFunction({ kind: "LoadedAllSubreddits" });
+            return m;
+          }),
+        this.multisService.getMultiMine().then((m) => {
+          callbackFunction({ kind: "LoadedMultis", loadedMultis: m.length });
+          return m;
+        }),
       ]);
+      callbackFunction({ kind: "processingData" });
       this.subreddits = subreddits;
       this.multis = multis;
       this.nameOfMultis = this.multisService.getNameOfMultis(this.multis);

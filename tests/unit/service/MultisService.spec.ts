@@ -32,10 +32,16 @@ describe("MultisService.ts", () => {
 
   describe("when calling getSubscribedSubreddits", function () {
     it("should delegate to redditApi", async function () {
-      const onfulfilled: Promise<Subreddit[]> = Promise.resolve(subreddits);
-      redditApi.getSubscribedSubreddits.returns(onfulfilled);
+      const dummyCallbackFunction = sinon.spy();
 
-      const actual = await multisService.getSubscribedSubreddits();
+      const onfulfilled: Promise<Subreddit[]> = Promise.resolve(subreddits);
+      redditApi.getSubscribedSubreddits
+        .withArgs(dummyCallbackFunction)
+        .returns(onfulfilled);
+
+      const actual = await multisService.getSubscribedSubreddits(
+        dummyCallbackFunction
+      );
 
       expect(actual).to.be.eql(subreddits);
     });

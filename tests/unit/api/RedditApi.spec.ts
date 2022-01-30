@@ -7,9 +7,13 @@ import { MultiReddit, Subreddit } from "@/types";
 describe("RedditApi.ts", () => {
   const axiosInstance = stubInterface<AxiosInstance>();
   const redditApi = new RedditApi(axiosInstance);
+  const callbackCollector: number[] = [];
+
+  const dummyCallbackFunction = () => (a: number) => callbackCollector.push(a);
 
   afterEach(() => {
     sinon.reset();
+    callbackCollector.length = 0;
   });
 
   describe("when calling getSubscribedSubreddits", function () {
@@ -18,6 +22,7 @@ describe("RedditApi.ts", () => {
         .withArgs("/subreddits/mine/subscriber", {
           params: {
             after: null,
+            limit: 100,
           },
         })
         .returns(
@@ -32,11 +37,14 @@ describe("RedditApi.ts", () => {
           })
         );
 
-      const actual = await redditApi.getSubscribedSubreddits();
+      const actual = await redditApi.getSubscribedSubreddits(
+        dummyCallbackFunction()
+      );
 
       expect(actual)
         .length(2)
         .to.have.deep.members([new Subreddit("d1"), new Subreddit("d2")]);
+      expect(callbackCollector).to.have.members([2]);
     });
 
     function setUpChainCallsUntil(until: number) {
@@ -47,6 +55,7 @@ describe("RedditApi.ts", () => {
           .withArgs("/subreddits/mine/subscriber", {
             params: {
               after: requestAfter,
+              limit: 100,
             },
           })
           .returns(
@@ -63,23 +72,33 @@ describe("RedditApi.ts", () => {
     it("should call reddit multiple times until after is null in response", async () => {
       setUpChainCallsUntil(50);
 
-      const actual = await redditApi.getSubscribedSubreddits();
+      const actual = await redditApi.getSubscribedSubreddits(
+        dummyCallbackFunction()
+      );
 
       const expected = [...Array(50).keys()].map(
         (i) => new Subreddit("subreddit" + i)
       );
       expect(actual).length(50).to.have.deep.members(expected);
+      expect(callbackCollector).to.have.members(
+        [...Array(50).keys()].map((i) => i + 1)
+      );
     });
 
     it("should call reddit multiple times until after is null in response or upto 100 times", async () => {
       setUpChainCallsUntil(105);
 
-      const actual = await redditApi.getSubscribedSubreddits();
+      const actual = await redditApi.getSubscribedSubreddits(
+        dummyCallbackFunction()
+      );
 
       const expected = [...Array(100).keys()].map(
         (i) => new Subreddit("subreddit" + i)
       );
       expect(actual).length(100).to.have.deep.members(expected);
+      expect(callbackCollector).to.have.members(
+        [...Array(100).keys()].map((i) => i + 1)
+      );
     });
   });
 

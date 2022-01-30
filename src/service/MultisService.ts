@@ -4,8 +4,10 @@ import { Action, DatatableRow, MultiReddit, Subreddit } from "@/types";
 export class MultisService {
   constructor(private redditApi: RedditApi) {}
 
-  getSubscribedSubreddits(): Promise<Subreddit[]> {
-    return this.redditApi.getSubscribedSubreddits();
+  getSubscribedSubreddits(
+    callbackFunction: (result: number) => void
+  ): Promise<Subreddit[]> {
+    return this.redditApi.getSubscribedSubreddits(callbackFunction);
   }
 
   getMultiMine(): Promise<MultiReddit[]> {
