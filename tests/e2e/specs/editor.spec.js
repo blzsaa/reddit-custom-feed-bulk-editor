@@ -24,7 +24,7 @@ describe("Editor page", () => {
 
     cy.intercept(
       {
-        url: "https://oauth.mock-reddit.com/subreddits/mine/subscriber",
+        url: "https://oauth.mock-reddit.com/subreddits/mine/subscriber?limit=100",
         headers: {
           authorization: "bearer access_token",
         },

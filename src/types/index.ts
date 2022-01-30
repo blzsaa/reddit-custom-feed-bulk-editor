@@ -25,3 +25,26 @@ export type DatatableRow = {
   subscribed: boolean;
   [key: string]: boolean | string;
 };
+
+export type LoadingStats = {
+  loadedSubreddits: number;
+  loadedMultis: number;
+  processingData: boolean;
+  loadedAllSubreddits: boolean;
+};
+
+export type LoadingStatsCallback =
+  | {
+      kind: "LoadedSubreddits";
+      loadedSubreddits: number;
+    }
+  | {
+      kind: "LoadedAllSubreddits";
+    }
+  | {
+      kind: "LoadedMultis";
+      loadedMultis: number;
+    }
+  | {
+      kind: "processingData";
+    };

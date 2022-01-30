@@ -8,9 +8,11 @@ export class RedditApi {
     this.instance = instance;
   }
 
-  public async getSubscribedSubreddits(): Promise<Subreddit[]> {
+  public async getSubscribedSubreddits(
+    callbackFunction: (result: number) => void
+  ): Promise<Subreddit[]> {
     let after = null;
-    let result: Subreddit[] = [];
+    const result: Subreddit[] = [];
     let i = 0;
     do {
       const response: {
@@ -18,10 +20,12 @@ export class RedditApi {
       } = await this.instance.get("/subreddits/mine/subscriber", {
         params: {
           after: after,
+          limit: 100,
         },
       });
       after = response.data.data.after;
-      result = result.concat(response.data.data.children.map((c) => c.data));
+      result.push(...response.data.data.children.map((c) => c.data));
+      callbackFunction(result.length);
       i++;
     } while (after !== null && i < 100);
     return result;

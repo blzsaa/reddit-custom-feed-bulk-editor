@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from "pinia";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { expect } from "chai";
-import { Action, MultiReddit, Subreddit } from "@/types";
+import { Action, LoadingStatsCallback, MultiReddit, Subreddit } from "@/types";
 import { MultisService } from "@/service/MultisService";
 import { stubConstructor } from "ts-sinon";
 
@@ -47,7 +47,14 @@ describe("MultiFeed Store", () => {
       const store = useMultiFeedStore();
       const multiService = stubConstructor(MultisService);
       store.multisService = multiService;
-      multiService.getSubscribedSubreddits.returns(Promise.resolve(subreddits));
+
+      const callbackCollector: LoadingStatsCallback[] = [];
+      function callbackFunction(stats: LoadingStatsCallback) {
+        callbackCollector.push(stats);
+      }
+      multiService.getSubscribedSubreddits
+        .yields(12)
+        .returns(Promise.resolve(subreddits));
       multiService.getMultiMine.returns(Promise.resolve(multiRedditArray));
       multiService.getNameOfMultis.returns([
         "displayNameMultiReddit1",
@@ -57,7 +64,7 @@ describe("MultiFeed Store", () => {
         { name: "row1", subscribed: true },
       ]);
 
-      await store.readMultiFeedInformationFromReddit();
+      await store.readMultiFeedInformationFromReddit(callbackFunction);
 
       expect(store.nameOfMultis).to.be.eql([
         "displayNameMultiReddit1",
@@ -88,6 +95,17 @@ describe("MultiFeed Store", () => {
           value: null,
         },
       });
+      expect(callbackCollector).to.have.deep.members([
+        { kind: "LoadedSubreddits", loadedSubreddits: 12 },
+        { kind: "LoadedAllSubreddits" },
+        {
+          kind: "LoadedMultis",
+          loadedMultis: 2,
+        },
+        {
+          kind: "processingData",
+        },
+      ]);
     });
   });
 
