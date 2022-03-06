@@ -48,3 +48,12 @@ export type LoadingStatsCallback =
   | {
       kind: "processingData";
     };
+
+export class NotificationEvent {
+  constructor(
+    readonly severity: "info" | "success" | "warn" | "error",
+    readonly summary: string,
+    readonly detail: string | undefined = undefined,
+    readonly life: number = 3000
+  ) {}
+}

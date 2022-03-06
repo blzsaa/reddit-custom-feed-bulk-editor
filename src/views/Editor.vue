@@ -1,5 +1,4 @@
 <template>
-  <Toast />
   <Button class="p-button-rounded" @click="save()">Save</Button>
   <loading-mask
     :loading-stats="loadingState"
@@ -21,7 +20,7 @@
       >Did not found any subscribed subreddits nor any multis.</template
     >
     <template #loading>Loading subreddits-multis relationships.</template>
-    <column field="name" header="name" key="name" :sortable="true">
+    <Column field="name" header="name" key="name" :sortable="true">
       <template #body="{ data }">
         <a
           :class="data.name + '_name'"
@@ -40,8 +39,8 @@
           v-tooltip.top.focus="'Hit enter key to filter'"
         />
       </template>
-    </column>
-    <column
+    </Column>
+    <Column
       field="subscribed"
       header="subscribed"
       key="subscribed"
@@ -62,8 +61,8 @@
           @change="filterCallback()"
         />
       </template>
-    </column>
-    <column
+    </Column>
+    <Column
       v-for="multi of nameOfMultis"
       :field="multi"
       :header="multi"
@@ -87,23 +86,21 @@
           @change="filterCallback()"
         />
       </template>
-    </column>
+    </Column>
   </data-table>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { onMounted } from "@vue/runtime-core";
-import DataTable from "primevue/datatable/sfc";
-import Column from "primevue/column/sfc";
-import InputText from "primevue/inputtext/sfc";
-import TriStateCheckbox from "primevue/tristatecheckbox/sfc";
-import Checkbox from "primevue/checkbox/sfc";
-import Button from "primevue/button/sfc";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import InputText from "primevue/inputtext";
+import TriStateCheckbox from "primevue/tristatecheckbox";
+import Checkbox from "primevue/checkbox";
+import Button from "primevue/button";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { DatatableRow, DataTableFilter, LoadingStats } from "@/types";
-import Toast from "primevue/toast";
-import { useToast } from "primevue/usetoast";
 import LoadingMask from "@/components/LoadingMask.vue";
 
 const nameOfMultis = ref<string[]>([]);
@@ -120,7 +117,6 @@ const loadingState = ref<LoadingStats>({
   processingData: false,
   loadedAllSubreddits: false,
 });
-const toast = useToast();
 
 onMounted(async () => {
   isLoading.value = true;
@@ -171,8 +167,6 @@ function subredditLink(nameOfSubreddit: string) {
 }
 
 async function save() {
-  toast.add({ severity: "info", summary: "Saving changes", life: 3000 });
   multiFeedStore.commitChanges();
-  toast.add({ severity: "success", summary: "Saved", life: 3000 });
 }
 </script>

@@ -5,6 +5,7 @@ import {
   DatatableRow,
   LoadingStatsCallback,
   MultiReddit,
+  NotificationEvent,
   Subreddit,
 } from "@/types";
 import { MultisService } from "@/service/MultisService";
@@ -12,6 +13,9 @@ import { AccessTokenFactory } from "@/service/AccessTokenFactory";
 import { generateFiltersForDataTable } from "@/service/DataTableCustomFilterService";
 import axios from "axios";
 import { RedditApi } from "@/api/RedditApi";
+import router from "@/router";
+import { useNotificationStore } from "@/store/NotificationStore";
+import { markRaw } from "vue";
 
 export const useMultiFeedStore = defineStore("multi-feed", {
   state: () => ({
@@ -24,6 +28,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     changedMultis: new Set<MultiReddit>(),
     multisService: {} as MultisService,
     filters: {} as DataTableFilter,
+    router: markRaw(router),
   }),
   persist: {
     paths: ["accessToken"],
@@ -43,33 +48,44 @@ export const useMultiFeedStore = defineStore("multi-feed", {
           Authorization: "bearer " + this.accessToken,
         },
       });
+      axiosInstance.interceptors.response.use(
+        (response) => response,
+        (error) => {
+          const notificationStore = useNotificationStore();
+          if (error.response.status === 401) {
+            this.accessToken = "";
+            notificationStore.addNotification(
+              new NotificationEvent("error", "Timeout", "Please reauthenticate")
+            );
+            router.push({ path: "/" });
+          }
+          return Promise.reject(error);
+        }
+      );
+
       this.multisService = new MultisService(new RedditApi(axiosInstance));
     },
     async readMultiFeedInformationFromReddit(
       callbackFunction: (stats: LoadingStatsCallback) => void
     ) {
-      const [subreddits, multis] = await Promise.all([
-        this.multisService
-          .getSubscribedSubreddits((n) =>
-            callbackFunction({
-              kind: "LoadedSubreddits",
-              loadedSubreddits: n,
-            })
-          )
-          .then((m) => {
-            callbackFunction({ kind: "LoadedAllSubreddits" });
-            return m;
-          }),
-        this.multisService.getMultiMine().then((m) => {
-          callbackFunction({ kind: "LoadedMultis", loadedMultis: m.length });
+      this.subreddits = await this.multisService
+        .getSubscribedSubreddits((n) =>
+          callbackFunction({
+            kind: "LoadedSubreddits",
+            loadedSubreddits: n,
+          })
+        )
+        .then((m) => {
+          callbackFunction({ kind: "LoadedAllSubreddits" });
           return m;
-        }),
-      ]);
+        });
+      this.multis = await this.multisService.getMultiMine().then((m) => {
+        callbackFunction({ kind: "LoadedMultis", loadedMultis: m.length });
+        return m;
+      });
       callbackFunction({ kind: "processingData" });
-      this.subreddits = subreddits;
-      this.multis = multis;
       this.nameOfMultis = this.multisService.getNameOfMultis(this.multis);
-      this.filters = generateFiltersForDataTable(multis);
+      this.filters = generateFiltersForDataTable(this.multis);
       this.dataTableContent = this.multisService.mapToDatatableRows(
         this.subreddits,
         this.multis
@@ -99,12 +115,19 @@ export const useMultiFeedStore = defineStore("multi-feed", {
         });
     },
     async commitChanges() {
+      const notificationStore = useNotificationStore();
+      notificationStore.addNotification(
+        new NotificationEvent("info", "Saving changes")
+      );
       await this.multisService.commitChanges(
         this.subredditChanges,
         Array.from(this.changedMultis)
       );
       this.changedMultis.clear();
       this.subredditChanges.clear();
+      notificationStore.addNotification(
+        new NotificationEvent("success", "Saved")
+      );
     },
   },
 });
