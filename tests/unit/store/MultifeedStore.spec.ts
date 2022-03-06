@@ -3,7 +3,10 @@ import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { expect } from "chai";
 import { Action, LoadingStatsCallback, MultiReddit, Subreddit } from "@/types";
 import { MultisService } from "@/service/MultisService";
-import { stubConstructor } from "ts-sinon";
+import sinon, { stubConstructor } from "ts-sinon";
+import router from "@/router";
+import { Router } from "vue-router";
+import Sinon from "cypress/types/sinon";
 
 describe("MultiFeed Store", () => {
   const subreddits = [
@@ -23,9 +26,13 @@ describe("MultiFeed Store", () => {
       new Set<string>(["a", "c"])
     ),
   ];
-
+  const stub: Sinon.SinonStubbedInstance<Router> = sinon.stub(router);
   beforeEach(() => {
     setActivePinia(createPinia());
+  });
+
+  afterEach(() => {
+    sinon.reset();
   });
 
   describe("after creating the store all values", function () {
@@ -39,6 +46,7 @@ describe("MultiFeed Store", () => {
       expect(store.changedMultis).to.be.eql(new Set<MultiReddit>());
       expect(store.multisService).to.be.eql({});
       expect(store.filters).to.be.eql({});
+      expect(store.router).to.be.eql(stub);
     });
   });
 

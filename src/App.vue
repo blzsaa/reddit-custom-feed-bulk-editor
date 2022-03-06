@@ -1,5 +1,10 @@
+<script setup lang="ts">
+import AppNotification from "@/components/AppNotification.vue";
+</script>
+
 <template>
   <router-view />
+  <app-notification />
 </template>
 
 <style>

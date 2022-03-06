@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import Chip from "primevue/chip/sfc";
+import Chip from "primevue/chip";
 
 function linkToRedditAuthenticationPage() {
   const responseType = "code";
