@@ -9,10 +9,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import RedditLogin from "@/components/RedditLogin.vue";
-import About from "@/components/About.vue";
+import About from "@/components/AboutPart.vue";
 
 export default defineComponent({
-  name: "Home",
+  name: "HomeView",
   components: {
     RedditLogin,
     About,

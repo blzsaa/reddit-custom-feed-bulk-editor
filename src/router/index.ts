@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
-import Editor from "@/views/Editor.vue";
-import Callback from "@/views/Callback.vue";
+import Home from "../views/HomeView.vue";
+import Editor from "@/views/EditorView.vue";
+import Callback from "@/views/CallbackView.vue";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 
 const routes: Array<RouteRecordRaw> = [
