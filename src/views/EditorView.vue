@@ -1,8 +1,7 @@
 <template>
-  <Button class="p-button-rounded" @click="save()">Save</Button>
   <loading-mask
     :loading-stats="loadingState"
-    v-if="isLoading || dataTableContent.length === 0"
+    v-if="dataTableContent.length === 0"
   />
   <data-table
     v-else
@@ -14,13 +13,33 @@
     :reorderableColumns="true"
     v-model:filters="filters"
     filterDisplay="row"
-    :loading="isLoading"
+    :scrollable="true"
+    scrollHeight="flex"
+    style="height: 100vh"
   >
+    <template #header>
+      <div>
+        <Button
+          icon="pi pi-check"
+          @click="save()"
+          label="save"
+          style="float: left"
+        />
+        Add or remove subreddits from custom-feeds
+      </div>
+    </template>
     <template #empty
       >Did not found any subscribed subreddits nor any multis.</template
     >
     <template #loading>Loading subreddits-multis relationships.</template>
-    <Column field="name" header="name" key="name" :sortable="true">
+    <Column
+      field="name"
+      style="min-width: 200px; z-index: 9999"
+      frozen
+      header="name"
+      key="name"
+      :sortable="true"
+    >
       <template #body="{ data }">
         <a
           :class="data.name + '_name'"
@@ -100,11 +119,10 @@ import TriStateCheckbox from "primevue/tristatecheckbox";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
-import { DatatableRow, DataTableFilter, LoadingStats } from "@/types";
+import { DataTableFilter, DatatableRow, LoadingStats } from "@/types";
 import LoadingMask from "@/components/LoadingMask.vue";
 
 const nameOfMultis = ref<string[]>([]);
-const isLoading = ref<boolean>(false);
 const dataTableContent = ref<DatatableRow[]>([]);
 const filters = ref<DataTableFilter | undefined>(undefined);
 const multiFeedStore = useMultiFeedStore();
@@ -119,8 +137,6 @@ const loadingState = ref<LoadingStats>({
 });
 
 onMounted(async () => {
-  isLoading.value = true;
-
   await multiFeedStore.initService();
   await multiFeedStore.readMultiFeedInformationFromReddit((a) => {
     if (a.kind === "processingData") {
@@ -132,15 +148,13 @@ onMounted(async () => {
     } else if (a.kind === "LoadedAllSubreddits") {
       loadingState.value.loadedAllSubreddits = true;
     } else {
-      const _exhaustiveCheck: never = a;
-      console.log(_exhaustiveCheck);
+      console.log(a);
     }
   });
 
   dataTableContent.value = multiFeedStore.dataTableContent;
   nameOfMultis.value = multiFeedStore.nameOfMultis;
   filters.value = multiFeedStore.filters;
-  isLoading.value = false;
 });
 
 const onChangeSubscriptionStatus = (
@@ -167,6 +181,16 @@ function subredditLink(nameOfSubreddit: string) {
 }
 
 async function save() {
-  multiFeedStore.commitChanges();
+  await multiFeedStore.commitChanges();
 }
 </script>
+<style>
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: border-box;
+}
+</style>
