@@ -112,12 +112,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { onMounted } from "@vue/runtime-core";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import InputText from "primevue/inputtext";
-import TriStateCheckbox from "primevue/tristatecheckbox";
-import Checkbox from "primevue/checkbox";
-import Button from "primevue/button";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { DataTableFilter, DatatableRow, LoadingStats } from "@/types";
 import LoadingMask from "@/components/LoadingMask.vue";

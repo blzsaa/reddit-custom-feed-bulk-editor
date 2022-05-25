@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { NotificationEvent } from "@/types";

@@ -53,10 +53,6 @@
 </template>
 
 <script setup lang="ts">
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Dialog from "primevue/dialog";
-import Skeleton from "primevue/skeleton";
 import { LoadingStats } from "@/types";
 import LoadingIcon from "@/components/LoadingIcon.vue";
 
