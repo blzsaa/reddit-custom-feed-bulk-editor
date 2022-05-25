@@ -8,7 +8,6 @@
 <script setup lang="ts">
 import { onMounted } from "@vue/runtime-core";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
-import ProgressSpinner from "primevue/progressspinner";
 import router from "@/router";
 
 const multiFeedStore = useMultiFeedStore();
