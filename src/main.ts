@@ -18,7 +18,9 @@ import Chip from "primevue/chip";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Dialog from "primevue/dialog";
+import Divider from "primevue/divider";
 import InputText from "primevue/inputtext";
+import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
 import Skeleton from "primevue/skeleton";
 import Toast from "primevue/toast";
@@ -39,7 +41,9 @@ createApp(App)
   .component("Column", Column)
   .component("DataTable", DataTable)
   .component("Dialog", Dialog)
+  .component("Divider", Divider)
   .component("InputText", InputText)
+  .component("Panel", Panel)
   .component("ProgressSpinner", ProgressSpinner)
   .component("Skeleton", Skeleton)
   .component("Toast", Toast)
