@@ -7,6 +7,14 @@ import AppNotification from "@/components/AppNotification.vue";
   <app-notification />
 </template>
 
+<style lang="sass">
+@import 'primeflex/primeflex.scss'
+
+.container
+  @include styleclass('sm:w-12 md:w-10 lg:w-8 m-auto')
+  max-width: 60rem
+</style>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
