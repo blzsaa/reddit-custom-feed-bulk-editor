@@ -57,7 +57,7 @@
     "sass": "1.52.1",
     "sass-loader": "13.0.0",
     "ts-sinon": "2.0.2",
-    "typescript": "4.6.4"
+    "typescript": "4.7.2"
   },
   "config": {
     "commitizen": {
