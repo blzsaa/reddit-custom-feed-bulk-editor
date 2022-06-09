@@ -58,17 +58,6 @@ describe("MultisService.ts", () => {
     });
   });
 
-  describe("when calling getNameOfMultis", function () {
-    it("should map MultiReddit to its displayName", async function () {
-      const actual = multisService.getNameOfMultis(multiRedditArray);
-
-      expect(actual).to.be.eql([
-        "displayNameMultiReddit1",
-        "displayNameMultiReddit2",
-      ]);
-    });
-  });
-
   describe("when calling mapToDatatableRows", function () {
     describe("with empty inputs", function () {
       it("should transform to empty DatatableRow", function () {

@@ -6,7 +6,6 @@ import {
   LoadingStatsCallback,
   MultiReddit,
   NotificationEvent,
-  Subreddit,
 } from "@/types";
 import { MultisService } from "@/service/MultisService";
 import { AccessTokenFactory } from "@/service/AccessTokenFactory";
@@ -20,10 +19,8 @@ import { markRaw } from "vue";
 export const useMultiFeedStore = defineStore("multi-feed", {
   state: () => ({
     accessToken: "" as string,
-    nameOfMultis: [] as string[],
     dataTableContent: [] as DatatableRow[],
     subredditChanges: new Map<string, Action>(),
-    subreddits: [] as Subreddit[],
     multis: [] as MultiReddit[],
     changedMultis: new Set<MultiReddit>(),
     multisService: {} as MultisService,
@@ -68,7 +65,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     async readMultiFeedInformationFromReddit(
       callbackFunction: (stats: LoadingStatsCallback) => void
     ) {
-      this.subreddits = await this.multisService
+      const subreddits = await this.multisService
         .getSubscribedSubreddits((n) =>
           callbackFunction({
             kind: "LoadedSubreddits",
@@ -84,10 +81,9 @@ export const useMultiFeedStore = defineStore("multi-feed", {
         return m;
       });
       callbackFunction({ kind: "processingData" });
-      this.nameOfMultis = this.multisService.getNameOfMultis(this.multis);
       this.filters = generateFiltersForDataTable(this.multis);
       this.dataTableContent = this.multisService.mapToDatatableRows(
-        this.subreddits,
+        subreddits,
         this.multis
       );
     },
