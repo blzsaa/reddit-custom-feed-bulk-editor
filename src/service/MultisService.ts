@@ -14,10 +14,6 @@ export class MultisService {
     return this.redditApi.getMultiMine();
   }
 
-  getNameOfMultis(multis: MultiReddit[]): string[] {
-    return multis.map((m) => m.display_name);
-  }
-
   commitChanges(
     subredditChanges: Map<string, Action>,
     customFeedWithChanges: MultiReddit[]
@@ -89,5 +85,9 @@ export class MultisService {
     return [...subscribedAndMultireddits].map((a) => {
       return a[1];
     });
+  }
+
+  public async searchSubreddit(subredditPrefix: string): Promise<string[]> {
+    return this.redditApi.searchSubreddit(subredditPrefix);
   }
 }

@@ -38,10 +38,8 @@ describe("MultiFeed Store", () => {
   describe("after creating the store all values", function () {
     it("should ba at their default values", () => {
       const store = useMultiFeedStore();
-      expect(store.nameOfMultis).to.be.empty;
       expect(store.dataTableContent).to.be.empty;
       expect(store.subredditChanges).to.be.eql(new Map<string, Action>());
-      expect(store.subreddits).to.be.empty;
       expect(store.multis).to.be.empty;
       expect(store.changedMultis).to.be.eql(new Set<MultiReddit>());
       expect(store.multisService).to.be.eql({});
@@ -64,25 +62,16 @@ describe("MultiFeed Store", () => {
         .yields(12)
         .returns(Promise.resolve(subreddits));
       multiService.getMultiMine.returns(Promise.resolve(multiRedditArray));
-      multiService.getNameOfMultis.returns([
-        "displayNameMultiReddit1",
-        "displayNameMultiReddit2",
-      ]);
       multiService.mapToDatatableRows.returns([
         { name: "row1", subscribed: true },
       ]);
 
       await store.readMultiFeedInformationFromReddit(callbackFunction);
 
-      expect(store.nameOfMultis).to.be.eql([
-        "displayNameMultiReddit1",
-        "displayNameMultiReddit2",
-      ]);
       expect(store.dataTableContent).to.be.eql([
         { name: "row1", subscribed: true },
       ]);
       expect(store.subredditChanges).to.be.eql(new Map<string, Action>());
-      expect(store.subreddits).to.be.eql(subreddits);
       expect(store.multis).to.be.eql(multiRedditArray);
       expect(store.changedMultis).to.be.eql(new Set<MultiReddit>());
       expect(store.filters).to.be.eql({

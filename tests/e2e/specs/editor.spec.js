@@ -123,44 +123,118 @@ describe("Editor page", () => {
     cy.get(".subreddit4_multi2").shouldNotBeChecked();
   });
   it("should be able modify subscription and multis", () => {
-    cy.intercept(
-      "PUT",
-      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi1/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit4%22%7D]%7D",
-      { statusCode: 200 }
-    ).as("multi1");
-    cy.intercept(
-      "PUT",
-      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi2/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit1%22%7D,%7B%22name%22:%22subreddit3%22%7D]%7D",
-      { statusCode: 200 }
-    ).as("multi2");
-    cy.intercept(
-      "POST",
-      "https://oauth.mock-reddit.com/api/subscribe?action=sub&sr_name=subreddit3",
-      { statusCode: 200 }
-    ).as("sub");
-    cy.intercept(
-      "POST",
-      "https://oauth.mock-reddit.com/api/subscribe?action=unsub&sr_name=subreddit1",
-      { statusCode: 200 }
-    ).as("unsub");
-    cy.visit(
-      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
-    );
+    mockSaveMultiCall("multi1", ["subreddit4"]);
+    mockSaveMultiCall("multi2", ["subreddit1", "subreddit3"]);
+    mockSubscribeCall("subreddit3");
+    mockUnsubscribeCall("subreddit1");
+
+    loadPage();
     cy.get(".subreddit1_subscribed").click();
     cy.get(".subreddit3_subscribed").click();
     cy.get(".subreddit1_multi1").click();
     cy.get(".subreddit2_multi2").click();
-    cy.get(".p-button").click();
+    cy.get("#save-button").click();
 
     cy.get(".subreddit1_subscribed").shouldNotBeChecked();
     cy.get(".subreddit3_subscribed").shouldBeChecked();
     cy.get(".subreddit1_multi1").shouldNotBeChecked();
     cy.get(".subreddit2_multi2").shouldNotBeChecked();
-    cy.wait("@sub");
-    cy.wait("@unsub");
+    cy.wait("@sub-subreddit3");
+    cy.wait("@unsub-subreddit1");
     cy.wait("@multi1");
     cy.wait("@multi2");
   });
+  it("should be add new subreddit", () => {
+    mockSaveMultiCall("multi2", [
+      "subreddit1",
+      "subreddit2",
+      "subreddit3",
+      "subreddit5",
+    ]);
+    mockSubscribeCall("subreddit5");
+
+    loadPage();
+
+    cy.intercept(
+      {
+        pathname: "/api/subreddit_autocomplete_v2",
+        query: {
+          query: "subreddit5",
+        },
+      },
+      (req) => {
+        req.reply({
+          statusCode: 200,
+          body: {
+            data: {
+              children: [
+                { data: { display_name: "subreddit5" } },
+                { data: { display_name: "subreddit5-with-suffix" } },
+              ],
+            },
+          },
+        });
+      }
+    ).as("subreddit5-search");
+
+    cy.get("#open-add-new-subreddit-form-button").click();
+    cy.focused().type("subreddit5");
+    cy.wait("@subreddit5-search");
+    cy.get("#add-new-subreddit-button").click();
+    cy.get(".p-overlaypanel-close").click();
+    cy.get(".subreddit5_subscribed").click();
+    cy.get(".subreddit5_multi2").click();
+
+    cy.get("#save-button").click();
+
+    cy.get(".subreddit5_subscribed").shouldBeChecked();
+    cy.get(".subreddit5_multi1").shouldNotBeChecked();
+    cy.get(".subreddit5_multi2").shouldBeChecked();
+    cy.wait("@sub-subreddit5");
+    cy.wait("@multi2");
+  });
+
+  function loadPage() {
+    cy.visit(
+      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
+    );
+  }
+
+  function mockSaveMultiCall(name, newSubreddits) {
+    const a = newSubreddits
+      .map((s) => {
+        return `{"name":"${s}"}`;
+      })
+      .join(",");
+    return cy
+      .intercept(
+        {
+          method: "PUT",
+          pathname: `/api/multi/user/userName/m/${name}`,
+          query: {
+            model: `{"subreddits":[${a}]}`,
+          },
+        },
+        { statusCode: 200 }
+      )
+      .as(name);
+  }
+
+  function mockSubChange(action, newSubreddit) {
+    return cy
+      .intercept(
+        "POST",
+        `https://oauth.mock-reddit.com/api/subscribe?action=${action}&sr_name=${newSubreddit}`,
+        { statusCode: 200 }
+      )
+      .as(`${action}-${newSubreddit}`);
+  }
+  function mockSubscribeCall(newSubreddit) {
+    return mockSubChange("sub", newSubreddit);
+  }
+  function mockUnsubscribeCall(unsubscribedSubreddit) {
+    return mockSubChange("unsub", unsubscribedSubreddit);
+  }
 
   function getHeaderAt(param) {
     return cy.get(

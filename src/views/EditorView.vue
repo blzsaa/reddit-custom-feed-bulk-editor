@@ -4,7 +4,7 @@
     v-if="dataTableContent.length === 0"
   />
   <data-table
-    v-else
+    :loading="loading"
     :value="dataTableContent"
     removableSort
     sortMode="multiple"
@@ -18,15 +18,7 @@
     style="height: 100vh"
   >
     <template #header>
-      <div>
-        <Button
-          icon="pi pi-check"
-          @click="save()"
-          label="save"
-          style="float: left"
-        />
-        Add or remove subreddits from custom-feeds
-      </div>
+      <table-header />
     </template>
     <template #empty
       >Did not found any subscribed subreddits nor any multis.</template
@@ -34,7 +26,8 @@
     <template #loading>Loading subreddits-multis relationships.</template>
     <Column
       field="name"
-      style="min-width: 200px; z-index: 9999"
+      class="name-column"
+      body-class="name-column-body"
       frozen
       header="name"
       key="name"
@@ -115,10 +108,14 @@ import { onMounted } from "@vue/runtime-core";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import { DataTableFilter, DatatableRow, LoadingStats } from "@/types";
 import LoadingMask from "@/components/LoadingMask.vue";
+import TableHeader from "@/components/TableHeader.vue";
 
 const nameOfMultis = ref<string[]>([]);
 const dataTableContent = ref<DatatableRow[]>([]);
-const filters = ref<DataTableFilter | undefined>(undefined);
+const filters = ref<DataTableFilter>({
+  name: { value: null, matchMode: "contains" },
+  subscribed: { value: null, matchMode: "equals" },
+});
 const multiFeedStore = useMultiFeedStore();
 const multiSortMeta = ref<{ field: string; order: number }[]>([
   { field: "name", order: 1 },
@@ -129,6 +126,7 @@ const loadingState = ref<LoadingStats>({
   processingData: false,
   loadedAllSubreddits: false,
 });
+const loading = ref(true);
 
 onMounted(async () => {
   await multiFeedStore.initService();
@@ -147,8 +145,11 @@ onMounted(async () => {
   });
 
   dataTableContent.value = multiFeedStore.dataTableContent;
-  nameOfMultis.value = multiFeedStore.nameOfMultis;
+  nameOfMultis.value = Object.keys(multiFeedStore.dataTableContent[0]).filter(
+    (a) => a !== "name" && a !== "subscribed"
+  );
   filters.value = multiFeedStore.filters;
+  loading.value = false;
 });
 
 const onChangeSubscriptionStatus = (
@@ -173,10 +174,6 @@ const onChangeCustomFeedStatus = (
 function subredditLink(nameOfSubreddit: string) {
   return `${process.env.VUE_APP_REDDIT_URL}/r/${nameOfSubreddit}`;
 }
-
-async function save() {
-  await multiFeedStore.commitChanges();
-}
 </script>
 <style>
 body,
@@ -186,5 +183,20 @@ html {
 }
 * {
   box-sizing: border-box;
+}
+.name-column {
+  min-width: 200px;
+}
+.name-column-body {
+  z-index: 1;
+}
+.p-column-filter-overlay {
+  z-index: 2;
+}
+thead.p-datatable-thead {
+  z-index: 2 !important;
+}
+.p-datatable .p-datatable-loading-overlay {
+  z-index: 3 !important;
 }
 </style>

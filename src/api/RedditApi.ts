@@ -94,4 +94,19 @@ export class RedditApi {
       }
     );
   }
+
+  public async searchSubreddit(subredditPrefix: string) {
+    const response: {
+      data: { data: { children: { data: { display_name: string } }[] } };
+    } = await this.instance.get("/api/subreddit_autocomplete_v2", {
+      params: {
+        query: subredditPrefix,
+        include_over_18: true,
+        include_profiles: false,
+        limit: 10,
+        typeahead_active: true,
+      },
+    });
+    return response.data.data.children.map((a) => a.data.display_name);
+  }
 }
