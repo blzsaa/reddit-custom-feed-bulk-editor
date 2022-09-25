@@ -34,7 +34,7 @@
     <template #loading>Loading subreddits-multis relationships.</template>
     <Column
       field="name"
-      style="min-width: 200px; z-index: 9999"
+      style="min-width: 200px; z-index: 1"
       frozen
       header="name"
       key="name"
@@ -186,5 +186,8 @@ html {
 }
 * {
   box-sizing: border-box;
+}
+.p-datatable-thead {
+  z-index: 2 !important;
 }
 </style>
