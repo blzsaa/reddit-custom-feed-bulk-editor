@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "axios": "0.27.2",
-    "core-js": "3.22.7",
+    "core-js": "3.26.1",
     "pinia": "2.0.14",
     "pinia-plugin-persistedstate": "1.6.1",
     "primeflex": "3.2.0",
