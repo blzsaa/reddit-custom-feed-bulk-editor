@@ -1,5 +1,5 @@
-import { RedditApi } from "@/api/RedditApi";
-import { Action, DatatableRow, MultiReddit, Subreddit } from "@/types";
+import type { RedditApi } from "@/api/RedditApi";
+import { Action, MultiReddit, Subreddit, type DatatableRow } from "@/types";
 
 export class MultisService {
   constructor(private redditApi: RedditApi) {}

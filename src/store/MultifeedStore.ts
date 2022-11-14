@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
 import {
   Action,
-  DataTableFilter,
-  DatatableRow,
-  LoadingStatsCallback,
+  type DatatableRow,
+  type LoadingStatsCallback,
   MultiReddit,
   NotificationEvent,
   Subreddit,
@@ -16,6 +15,7 @@ import { RedditApi } from "@/api/RedditApi";
 import router from "@/router";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { markRaw } from "vue";
+import type { DataTableFilterMeta } from "primevue/datatable";
 
 export const useMultiFeedStore = defineStore("multi-feed", {
   state: () => ({
@@ -27,7 +27,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     multis: [] as MultiReddit[],
     changedMultis: new Set<MultiReddit>(),
     multisService: {} as MultisService,
-    filters: {} as DataTableFilter,
+    filters: {} as DataTableFilterMeta,
     router: markRaw(router),
   }),
   persist: {
@@ -36,13 +36,13 @@ export const useMultiFeedStore = defineStore("multi-feed", {
   actions: {
     async extractAccessToken(href: string) {
       this.accessToken = await new AccessTokenFactory().extractAccessToken(
-        axios.create({ baseURL: process.env.VUE_APP_REDDIT_URL }),
+        axios.create({ baseURL: import.meta.env.VITE_REDDIT_URL }),
         href
       );
     },
     async initService() {
       const axiosInstance = axios.create({
-        baseURL: process.env.VUE_APP_OAUTH_REDDIT_URL,
+        baseURL: import.meta.env.VITE_OAUTH_REDDIT_URL,
         timeout: 5000,
         headers: {
           Authorization: "bearer " + this.accessToken,

@@ -1,12 +1,9 @@
+import { beforeEach, describe, it, expect, afterEach, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
-import { expect } from "chai";
 import { Action, LoadingStatsCallback, MultiReddit, Subreddit } from "@/types";
 import { MultisService } from "@/service/MultisService";
-import sinon, { stubConstructor } from "ts-sinon";
-import router from "@/router";
-import { Router } from "vue-router";
-import Sinon from "cypress/types/sinon";
+import { mock } from "vitest-mock-extended";
 
 describe("MultiFeed Store", () => {
   const subreddits = [
@@ -26,13 +23,12 @@ describe("MultiFeed Store", () => {
       new Set<string>(["a", "c"])
     ),
   ];
-  const stub: Sinon.SinonStubbedInstance<Router> = sinon.stub(router);
   beforeEach(() => {
     setActivePinia(createPinia());
   });
 
   afterEach(() => {
-    sinon.reset();
+    vi.restoreAllMocks();
   });
 
   describe("after creating the store all values", function () {
@@ -46,29 +42,34 @@ describe("MultiFeed Store", () => {
       expect(store.changedMultis).to.be.eql(new Set<MultiReddit>());
       expect(store.multisService).to.be.eql({});
       expect(store.filters).to.be.eql({});
-      expect(store.router).to.be.eql(stub);
     });
   });
 
   describe("calling readMultiFeedInformationFromReddit", function () {
     it("should delegate all logic to the service", async () => {
       const store = useMultiFeedStore();
-      const multiService = stubConstructor(MultisService);
+      const multiService = mock(MultisService);
       store.multisService = multiService;
 
       const callbackCollector: LoadingStatsCallback[] = [];
       function callbackFunction(stats: LoadingStatsCallback) {
         callbackCollector.push(stats);
       }
-      multiService.getSubscribedSubreddits
-        .yields(12)
-        .returns(Promise.resolve(subreddits));
-      multiService.getMultiMine.returns(Promise.resolve(multiRedditArray));
-      multiService.getNameOfMultis.returns([
+      multiService.getSubscribedSubreddits.mockImplementationOnce(() => {
+        callbackFunction({
+          kind: "LoadedSubreddits",
+          loadedSubreddits: 12,
+        });
+        return Promise.resolve(subreddits);
+      });
+      multiService.getMultiMine.mockReturnValue(
+        Promise.resolve(multiRedditArray)
+      );
+      multiService.getNameOfMultis.mockReturnValue([
         "displayNameMultiReddit1",
         "displayNameMultiReddit2",
       ]);
-      multiService.mapToDatatableRows.returns([
+      multiService.mapToDatatableRows.mockReturnValue([
         { name: "row1", subscribed: true },
       ]);
 
@@ -268,7 +269,7 @@ describe("MultiFeed Store", () => {
   describe("calling commitChanges", function () {
     it("should delegate and clear changedMultis and subredditsChange", async () => {
       const store = useMultiFeedStore();
-      const multiService = stubConstructor(MultisService);
+      const multiService = mock(MultisService);
       store.multisService = multiService;
       const changedMultis = [
         new MultiReddit("multi", "path", new Set<string>(["subreddit1"])),
@@ -282,7 +283,7 @@ describe("MultiFeed Store", () => {
 
       await store.commitChanges();
 
-      expect(multiService.commitChanges.calledOnce).to.be.true;
+      expect(multiService.commitChanges).toHaveBeenCalled();
       expect(store.changedMultis).to.be.empty;
       expect(store.subredditChanges).to.be.empty;
     });

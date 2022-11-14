@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { NotificationEvent } from "@/types";
+import type { NotificationEvent } from "@/types";
 import { watch } from "vue";
 const toast = useToast();
 const notificationStore = useNotificationStore();

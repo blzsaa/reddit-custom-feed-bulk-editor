@@ -23,10 +23,10 @@ function linkToRedditAuthenticationPage() {
   // send the user to the authentication url
   return (
     "https://www.reddit.com/api/v1/authorize?" +
-    `client_id=${process.env.VUE_APP_CLIENT_ID}` +
+    `client_id=${import.meta.env.VITE_CLIENT_ID}` +
     `&response_type=${responseType}` +
     `&state=${state}` +
-    `&redirect_uri=${encodeURIComponent(process.env.VUE_APP_REDIRECT_URI)}` +
+    `&redirect_uri=${encodeURIComponent(import.meta.env.VITE_REDIRECT_URI)}` +
     `&duration=${encodeURIComponent(duration)}` +
     `&scope=${encodeURIComponent(scopes.join(" "))}`
   );

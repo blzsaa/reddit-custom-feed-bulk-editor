@@ -1,4 +1,4 @@
-import { AxiosInstance } from "axios";
+import type { AxiosInstance } from "axios";
 import { MultiReddit, Subreddit } from "@/types";
 
 export class RedditApi {

@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { describe, it, expect } from "vitest";
 import { generateFiltersForDataTable } from "@/service/DataTableCustomFilterService";
 import { FilterMatchMode } from "primevue/api";
 import { MultiReddit } from "@/types";

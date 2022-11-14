@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { LoadingStats } from "@/types";
+import type { LoadingStats } from "@/types";
 import LoadingIcon from "@/components/LoadingIcon.vue";
 
 defineProps<{

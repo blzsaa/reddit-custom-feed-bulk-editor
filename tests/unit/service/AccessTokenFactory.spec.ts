@@ -1,14 +1,14 @@
-import { expect } from "chai";
-import sinon, { stubInterface } from "ts-sinon";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { AccessTokenFactory } from "@/service/AccessTokenFactory";
-import { AxiosInstance, AxiosResponse } from "axios";
+import { AxiosInstance } from "axios";
+import { Matcher, mock } from "vitest-mock-extended";
 
 describe("AccessTokenFactory.ts", () => {
-  const axiosInstance = stubInterface<AxiosInstance>();
+  const axiosInstance = mock<AxiosInstance>();
   const accessTokenFactory = new AccessTokenFactory();
 
   afterEach(() => {
-    sinon.reset();
+    vi.restoreAllMocks();
   });
 
   describe("when calling extractAccessToken with location containing code", function () {
@@ -19,18 +19,21 @@ describe("AccessTokenFactory.ts", () => {
       );
       const href = `https://localhost:8080?code=${code}`;
       axiosInstance.post
-        .withArgs(
+        .calledWith(
           "/api/v1/access_token",
           `grant_type=authorization_code&code=${code}&redirect_uri=${redirectUri}`,
-          {
-            auth: { username: "myClientId", password: "" },
-          }
+          new Matcher(
+            (actualValue) =>
+              "myClientId" === actualValue?.auth?.username &&
+              "" === actualValue?.auth?.password,
+            "matcher"
+          )
         )
-        .returns(
-          withAxiosResponse({
+        .mockResolvedValue({
+          data: {
             access_token: "expectedAccessToken",
-          })
-        );
+          },
+        });
 
       const actual = await accessTokenFactory.extractAccessToken(
         axiosInstance,
@@ -40,12 +43,4 @@ describe("AccessTokenFactory.ts", () => {
       expect(actual).to.be.eql("expectedAccessToken");
     });
   });
-
-  function withAxiosResponse<T>(t: T): Promise<AxiosResponse<T>> {
-    return new Promise((resolve) => {
-      const axiosResponse = stubInterface<AxiosResponse>();
-      axiosResponse.data = t;
-      resolve(axiosResponse);
-    });
-  }
 });
