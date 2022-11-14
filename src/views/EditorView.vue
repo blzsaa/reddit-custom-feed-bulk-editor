@@ -111,18 +111,20 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { onMounted } from "@vue/runtime-core";
+import { onMounted } from "vue";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
-import { DataTableFilter, DatatableRow, LoadingStats } from "@/types";
+import type { DatatableRow, LoadingStats } from "@/types";
 import LoadingMask from "@/components/LoadingMask.vue";
+import type {
+  DataTableFilterMeta,
+  DataTableSortMeta,
+} from "primevue/datatable";
 
 const nameOfMultis = ref<string[]>([]);
 const dataTableContent = ref<DatatableRow[]>([]);
-const filters = ref<DataTableFilter | undefined>(undefined);
+const filters = ref<DataTableFilterMeta | undefined>(undefined);
 const multiFeedStore = useMultiFeedStore();
-const multiSortMeta = ref<{ field: string; order: number }[]>([
-  { field: "name", order: 1 },
-]);
+const multiSortMeta = ref<DataTableSortMeta[]>([{ field: "name", order: 1 }]);
 const loadingState = ref<LoadingStats>({
   loadedSubreddits: 0,
   loadedMultis: 0,
@@ -171,7 +173,7 @@ const onChangeCustomFeedStatus = (
 };
 
 function subredditLink(nameOfSubreddit: string) {
-  return `${process.env.VUE_APP_REDDIT_URL}/r/${nameOfSubreddit}`;
+  return `${import.meta.env.VITE_REDDIT_URL}/r/${nameOfSubreddit}`;
 }
 
 async function save() {

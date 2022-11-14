@@ -16,12 +16,12 @@ Reddit-custom-feed-bulk-editor gives a UI to bulk edit custom-feeds in bulk.
   - name, about url: does not matter
 - create a file named .env.local with the content:
   - ```
-    VUE_APP_CLIENT_ID=<<client id>>
-    VUE_APP_REDIRECT_URI = http://localhost:8080/authorize_callback
+    VITE_CLIENT_ID=<<client id>>
+    VITE_REDIRECT_URI=http://localhost:8080/authorize_callback
     ```
   - where client_id comes from the registered reddit app
 - run `npm install`
-- run `npm serve`
+- run `npm run dev`
 
 ## Contributing
 

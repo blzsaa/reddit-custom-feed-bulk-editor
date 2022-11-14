@@ -1,9 +1,10 @@
-import { DataTableFilter, MultiReddit } from "@/types";
+import type { MultiReddit } from "@/types";
 import { FilterMatchMode } from "primevue/api";
+import type { DataTableFilterMeta } from "primevue/datatable";
 
 export const generateFiltersForDataTable: (
   multis: MultiReddit[]
-) => DataTableFilter = (multis: MultiReddit[]) => {
+) => DataTableFilterMeta = (multis: MultiReddit[]) => {
   return multis
     .map((m) => m.display_name)
     .reduce(
@@ -20,6 +21,6 @@ export const generateFiltersForDataTable: (
           value: null,
           matchMode: FilterMatchMode.EQUALS,
         },
-      } as DataTableFilter
+      } as DataTableFilterMeta
     );
 };

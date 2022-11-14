@@ -10,11 +10,6 @@ export class MultiReddit {
   ) {}
 }
 
-export interface DataTableFilter {
-  name: { value: null; matchMode: string | undefined };
-  [key: string]: { value: null; matchMode: string | undefined };
-}
-
 export enum Action {
   Subscribe = "Subscribe",
   Unsubscribe = "Unsubscribe",

@@ -1,3 +1,4 @@
+/* eslint-env node */
 const fs = require("fs");
 const IN_PRODUCTION = process.env.NODE_ENV === "production";
 

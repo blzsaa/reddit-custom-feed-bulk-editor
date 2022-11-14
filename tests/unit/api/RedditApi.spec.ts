@@ -1,31 +1,34 @@
-import { expect } from "chai";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { AxiosInstance, AxiosResponse } from "axios";
-import sinon, { stubInterface } from "ts-sinon";
 import { RedditApi } from "@/api/RedditApi";
 import { MultiReddit, Subreddit } from "@/types";
+import { mock, Matcher } from "vitest-mock-extended";
 
 describe("RedditApi.ts", () => {
-  const axiosInstance = stubInterface<AxiosInstance>();
+  const axiosInstance = mock<AxiosInstance>();
   const redditApi = new RedditApi(axiosInstance);
   const callbackCollector: number[] = [];
 
   const dummyCallbackFunction = () => (a: number) => callbackCollector.push(a);
 
   afterEach(() => {
-    sinon.reset();
+    vi.restoreAllMocks();
     callbackCollector.length = 0;
   });
 
   describe("when calling getSubscribedSubreddits", function () {
     it("should call reddit only once when after is null in response", async () => {
       axiosInstance.get
-        .withArgs("/subreddits/mine/subscriber", {
-          params: {
-            after: null,
-            limit: 100,
-          },
-        })
-        .returns(
+        .calledWith(
+          "/subreddits/mine/subscriber",
+          new Matcher(
+            (actualValue) =>
+              null === actualValue?.params.after &&
+              100 === actualValue?.params.limit,
+            "matcher"
+          )
+        )
+        .mockReturnValue(
           withAxiosResponse({
             data: {
               after: null,
@@ -52,13 +55,16 @@ describe("RedditApi.ts", () => {
         const requestAfter = i === 0 ? null : "after" + i;
         const responseAfter = i !== until - 1 ? "after" + (i + 1) : null;
         axiosInstance.get
-          .withArgs("/subreddits/mine/subscriber", {
-            params: {
-              after: requestAfter,
-              limit: 100,
-            },
-          })
-          .returns(
+          .calledWith(
+            "/subreddits/mine/subscriber",
+            new Matcher(
+              (actualValue) =>
+                requestAfter === actualValue?.params.after &&
+                100 === actualValue?.params.limit,
+              "matcher"
+            )
+          )
+          .mockReturnValue(
             withAxiosResponse({
               data: {
                 after: responseAfter,
@@ -104,7 +110,7 @@ describe("RedditApi.ts", () => {
 
   describe("when calling getMultiMine", function () {
     it("should call reddit and transform response", async () => {
-      axiosInstance.get.withArgs("/api/multi/mine").returns(
+      axiosInstance.get.calledWith("/api/multi/mine").mockReturnValue(
         withAxiosResponse([
           {
             data: {
@@ -148,8 +154,8 @@ describe("RedditApi.ts", () => {
     it("should delegate to reddit", async () => {
       await redditApi.subscribeToSubreddits("subreddits");
 
-      expect(axiosInstance.post.calledOnce).to.be.true;
-      expect(axiosInstance.post.getCalls()[0].args).to.be.eql([
+      expect(axiosInstance.post).toHaveBeenCalledOnce();
+      expect(axiosInstance.post).toBeCalledWith(
         "/api/subscribe",
         {},
         {
@@ -157,8 +163,8 @@ describe("RedditApi.ts", () => {
             action: "sub",
             sr_name: "subreddits",
           },
-        },
-      ]);
+        }
+      );
     });
   });
 
@@ -166,8 +172,8 @@ describe("RedditApi.ts", () => {
     it("should delegate to reddit", async () => {
       await redditApi.unsubscribeToSubreddits("subreddits");
 
-      expect(axiosInstance.post.calledOnce).to.be.true;
-      expect(axiosInstance.post.getCalls()[0].args).to.be.eql([
+      expect(axiosInstance.post).toHaveBeenCalledOnce();
+      expect(axiosInstance.post).toBeCalledWith(
         "/api/subscribe",
         {},
         {
@@ -175,8 +181,8 @@ describe("RedditApi.ts", () => {
             action: "unsub",
             sr_name: "subreddits",
           },
-        },
-      ]);
+        }
+      );
     });
   });
 
@@ -187,8 +193,8 @@ describe("RedditApi.ts", () => {
         { name: "subreddits2" },
       ]);
 
-      expect(axiosInstance.put.calledOnce).to.be.true;
-      expect(axiosInstance.put.getCalls()[0].args).to.be.eql([
+      expect(axiosInstance.put).toHaveBeenCalledOnce();
+      expect(axiosInstance.put).toBeCalledWith(
         "/api/multi/multi1",
         {},
         {
@@ -197,14 +203,14 @@ describe("RedditApi.ts", () => {
               subreddits: [{ name: "subreddits1" }, { name: "subreddits2" }],
             },
           },
-        },
-      ]);
+        }
+      );
     });
   });
 
   function withAxiosResponse<T>(t: T): Promise<AxiosResponse<T>> {
     return new Promise((resolve) => {
-      const axiosResponse = stubInterface<AxiosResponse>();
+      const axiosResponse = mock<AxiosResponse>();
       axiosResponse.data = t;
       resolve(axiosResponse);
     });

@@ -1,5 +1,5 @@
+import { describe, beforeEach, it, expect } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { expect } from "chai";
 import { NotificationEvent } from "@/types";
 import { useNotificationStore } from "@/store/NotificationStore";
 

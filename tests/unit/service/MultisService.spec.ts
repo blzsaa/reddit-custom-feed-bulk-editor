@@ -1,11 +1,11 @@
-import { expect } from "chai";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { MultiReddit, Subreddit } from "@/types";
-import sinon, { stubConstructor } from "ts-sinon";
 import { RedditApi } from "@/api/RedditApi";
 import { MultisService } from "@/service/MultisService";
+import { mock } from "vitest-mock-extended";
 
 describe("MultisService.ts", () => {
-  const redditApi = stubConstructor(RedditApi);
+  const redditApi = mock(RedditApi);
   const multisService = new MultisService(redditApi);
 
   const subreddits = [
@@ -27,17 +27,17 @@ describe("MultisService.ts", () => {
   ];
 
   afterEach(() => {
-    sinon.reset();
+    vi.restoreAllMocks();
   });
 
   describe("when calling getSubscribedSubreddits", function () {
     it("should delegate to redditApi", async function () {
-      const dummyCallbackFunction = sinon.spy();
+      const dummyCallbackFunction = mock();
 
       const onfulfilled: Promise<Subreddit[]> = Promise.resolve(subreddits);
       redditApi.getSubscribedSubreddits
-        .withArgs(dummyCallbackFunction)
-        .returns(onfulfilled);
+        .calledWith(dummyCallbackFunction)
+        .mockReturnValue(onfulfilled);
 
       const actual = await multisService.getSubscribedSubreddits(
         dummyCallbackFunction
@@ -50,7 +50,7 @@ describe("MultisService.ts", () => {
     it("should delegate to redditApi", async function () {
       const onfulfilled: Promise<MultiReddit[]> =
         Promise.resolve(multiRedditArray);
-      redditApi.getMultiMine.returns(onfulfilled);
+      redditApi.getMultiMine.mockReturnValue(onfulfilled);
 
       const actual = await multisService.getMultiMine();
 
