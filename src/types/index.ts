@@ -24,7 +24,7 @@ export type DatatableRow = {
 export type LoadingStats = {
   loadedSubreddits: number;
   loadedMultis: number;
-  processingData: boolean;
+  dataProcessed: boolean;
   loadedAllSubreddits: boolean;
 };
 
@@ -35,13 +35,14 @@ export type LoadingStatsCallback =
     }
   | {
       kind: "LoadedAllSubreddits";
+      loadedSubreddits: number;
     }
   | {
       kind: "LoadedMultis";
       loadedMultis: number;
     }
   | {
-      kind: "processingData";
+      kind: "DataProcessed";
     };
 
 export class NotificationEvent {

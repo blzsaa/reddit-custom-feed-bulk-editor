@@ -68,28 +68,33 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     async readMultiFeedInformationFromReddit(
       callbackFunction: (stats: LoadingStatsCallback) => void
     ) {
-      this.subreddits = await this.multisService
-        .getSubscribedSubreddits((n) =>
-          callbackFunction({
-            kind: "LoadedSubreddits",
-            loadedSubreddits: n,
-          })
-        )
-        .then((m) => {
-          callbackFunction({ kind: "LoadedAllSubreddits" });
-          return m;
-        });
-      this.multis = await this.multisService.getMultiMine().then((m) => {
-        callbackFunction({ kind: "LoadedMultis", loadedMultis: m.length });
-        return m;
-      });
-      callbackFunction({ kind: "processingData" });
+      await Promise.all([
+        this.multisService
+          .getSubscribedSubreddits((n) =>
+            callbackFunction({
+              kind: "LoadedSubreddits",
+              loadedSubreddits: n,
+            })
+          )
+          .then((m) => {
+            callbackFunction({
+              kind: "LoadedAllSubreddits",
+              loadedSubreddits: m.length,
+            });
+            this.subreddits = m;
+          }),
+        this.multisService.getMultiMine().then((m) => {
+          callbackFunction({ kind: "LoadedMultis", loadedMultis: m.length });
+          this.multis = m;
+        }),
+      ]);
       this.nameOfMultis = this.multisService.getNameOfMultis(this.multis);
       this.filters = generateFiltersForDataTable(this.multis);
       this.dataTableContent = this.multisService.mapToDatatableRows(
         this.subreddits,
         this.multis
       );
+      callbackFunction({ kind: "DataProcessed" });
     },
     changeSubscriptionStatus(name: string, newValue: boolean) {
       if (newValue) {

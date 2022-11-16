@@ -6,6 +6,9 @@
   <data-table
     v-else
     :value="dataTableContent"
+    :paginator="true"
+    :rows="100"
+    :rowsPerPageOptions="[10, 25, 50, 100]"
     removableSort
     sortMode="multiple"
     :multiSortMeta="multiSortMeta"
@@ -128,21 +131,22 @@ const multiSortMeta = ref<DataTableSortMeta[]>([{ field: "name", order: 1 }]);
 const loadingState = ref<LoadingStats>({
   loadedSubreddits: 0,
   loadedMultis: 0,
-  processingData: false,
+  dataProcessed: false,
   loadedAllSubreddits: false,
 });
 
 onMounted(async () => {
   await multiFeedStore.initService();
   await multiFeedStore.readMultiFeedInformationFromReddit((a) => {
-    if (a.kind === "processingData") {
-      loadingState.value.processingData = true;
+    if (a.kind === "DataProcessed") {
+      loadingState.value.dataProcessed = true;
     } else if (a.kind === "LoadedSubreddits") {
       loadingState.value.loadedSubreddits = a.loadedSubreddits;
     } else if (a.kind === "LoadedMultis") {
       loadingState.value.loadedMultis = a.loadedMultis;
     } else if (a.kind === "LoadedAllSubreddits") {
       loadingState.value.loadedAllSubreddits = true;
+      loadingState.value.loadedSubreddits = a.loadedSubreddits;
     } else {
       console.log(a);
     }
