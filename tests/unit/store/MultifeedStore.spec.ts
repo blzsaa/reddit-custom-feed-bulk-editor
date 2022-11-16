@@ -106,13 +106,13 @@ describe("MultiFeed Store", () => {
       });
       expect(callbackCollector).to.have.deep.members([
         { kind: "LoadedSubreddits", loadedSubreddits: 12 },
-        { kind: "LoadedAllSubreddits" },
+        { kind: "LoadedAllSubreddits", loadedSubreddits: 2 },
         {
           kind: "LoadedMultis",
           loadedMultis: 2,
         },
         {
-          kind: "processingData",
+          kind: "DataProcessed",
         },
       ]);
     });
