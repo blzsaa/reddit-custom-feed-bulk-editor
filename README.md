@@ -28,6 +28,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+This repo uses [Conventional Commits](https://www.conventionalcommits.org/) for git commit messages.
+You can use `npx git-cz` to help with the formatting of the commit messages.
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
