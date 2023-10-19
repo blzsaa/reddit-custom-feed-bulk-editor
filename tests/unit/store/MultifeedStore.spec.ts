@@ -266,6 +266,46 @@ describe("MultiFeed Store", () => {
       ]);
     });
   });
+  describe("calling isValid", () => {
+    function createMultiRedditWithFixedSizeSubredditsInIt(length: number) {
+      return new Set(Array.from({ length }, (_, index) => "Subreddit" + index));
+    }
+    it("should return true when all custom feeds has 100 or less elements in it", () => {
+      const store = useMultiFeedStore();
+
+      store.changedMultis = new Set([
+        new MultiReddit(
+          "displayNameMultiReddit1",
+          "path1",
+          createMultiRedditWithFixedSizeSubredditsInIt(99)
+        ),
+        new MultiReddit(
+          "displayNameMultiReddit2",
+          "path2",
+          createMultiRedditWithFixedSizeSubredditsInIt(100)
+        ),
+      ]);
+      expect(store.isValid).to.be.true;
+    });
+
+    it("should return false when any custom feed has more than 100 elements in it", () => {
+      const store = useMultiFeedStore();
+
+      store.changedMultis = new Set<MultiReddit>([
+        new MultiReddit(
+          "displayNameMultiReddit1",
+          "path1",
+          createMultiRedditWithFixedSizeSubredditsInIt(99)
+        ),
+        new MultiReddit(
+          "displayNameMultiReddit2",
+          "path1",
+          createMultiRedditWithFixedSizeSubredditsInIt(101)
+        ),
+      ]);
+      expect(store.isValid).to.be.false;
+    });
+  });
   describe("calling commitChanges", function () {
     it("should delegate and clear changedMultis and subredditsChange", async () => {
       const store = useMultiFeedStore();

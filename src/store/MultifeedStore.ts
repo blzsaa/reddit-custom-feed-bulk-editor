@@ -30,6 +30,24 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     filters: {} as DataTableFilterMeta,
     router: markRaw(router),
   }),
+  getters: {
+    isValid: (state) => {
+      const isValid = Array.from(state.changedMultis).every((m) => {
+        return m.subreddits.size <= 100;
+      });
+      if (!isValid) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification(
+          new NotificationEvent(
+            "error",
+            `Custom feeds cannot have more than 100 subreddits`
+            // nameOfMultis
+          )
+        );
+      }
+      return isValid;
+    },
+  },
   persist: {
     paths: ["accessToken"],
   },
@@ -108,16 +126,17 @@ export const useMultiFeedStore = defineStore("multi-feed", {
       nameOfTheSubreddit: string,
       newStatus: boolean
     ) {
-      this.multis
-        .filter((a) => a.display_name == nameOfTheMulti)
-        .forEach((find) => {
-          this.changedMultis.add(find);
-          if (newStatus) {
-            find.subreddits.add(nameOfTheSubreddit);
-          } else {
-            find.subreddits.delete(nameOfTheSubreddit);
-          }
-        });
+      const find = this.multis.find((a) => a.display_name == nameOfTheMulti);
+      if (!find) {
+        return;
+      }
+      this.changedMultis.add(find);
+      if (newStatus) {
+        find.subreddits.add(nameOfTheSubreddit);
+      } else {
+        find.subreddits.delete(nameOfTheSubreddit);
+      }
+      console.log(find.subreddits.size > 100);
     },
     async commitChanges() {
       const notificationStore = useNotificationStore();

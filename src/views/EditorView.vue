@@ -24,6 +24,7 @@
       <div>
         <Button
           icon="pi pi-check"
+          :disabled="!multiFeedStore.isValid"
           @click="save()"
           label="save"
           style="float: left"
@@ -113,8 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
 import type { DatatableRow, LoadingStats } from "@/types";
 import LoadingMask from "@/components/LoadingMask.vue";
