@@ -31,7 +31,7 @@
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
     "@fullhuman/postcss-purgecss": "5.0.0",
-    "@fullhuman/vue-cli-plugin-purgecss": "4.1.0",
+    "@fullhuman/vue-cli-plugin-purgecss": "5.0.0",
     "@rushstack/eslint-patch": "1.2.0",
     "@types/jsdom": "20.0.1",
     "@types/node": "16.18.59",
