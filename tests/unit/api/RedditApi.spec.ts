@@ -25,8 +25,8 @@ describe("RedditApi.ts", () => {
             (actualValue) =>
               null === actualValue?.params.after &&
               100 === actualValue?.params.limit,
-            "matcher"
-          )
+            "matcher",
+          ),
         )
         .mockReturnValue(
           withAxiosResponse({
@@ -37,11 +37,11 @@ describe("RedditApi.ts", () => {
                 { data: new Subreddit("d2") },
               ],
             },
-          })
+          }),
         );
 
       const actual = await redditApi.getSubscribedSubreddits(
-        dummyCallbackFunction()
+        dummyCallbackFunction(),
       );
 
       expect(actual)
@@ -61,8 +61,8 @@ describe("RedditApi.ts", () => {
               (actualValue) =>
                 requestAfter === actualValue?.params.after &&
                 100 === actualValue?.params.limit,
-              "matcher"
-            )
+              "matcher",
+            ),
           )
           .mockReturnValue(
             withAxiosResponse({
@@ -70,7 +70,7 @@ describe("RedditApi.ts", () => {
                 after: responseAfter,
                 children: [{ data: new Subreddit("subreddit" + i) }],
               },
-            })
+            }),
           );
       }
     }
@@ -79,15 +79,15 @@ describe("RedditApi.ts", () => {
       setUpChainCallsUntil(50);
 
       const actual = await redditApi.getSubscribedSubreddits(
-        dummyCallbackFunction()
+        dummyCallbackFunction(),
       );
 
       const expected = [...Array(50).keys()].map(
-        (i) => new Subreddit("subreddit" + i)
+        (i) => new Subreddit("subreddit" + i),
       );
       expect(actual).length(50).to.have.deep.members(expected);
       expect(callbackCollector).to.have.members(
-        [...Array(50).keys()].map((i) => i + 1)
+        [...Array(50).keys()].map((i) => i + 1),
       );
     });
 
@@ -95,15 +95,15 @@ describe("RedditApi.ts", () => {
       setUpChainCallsUntil(105);
 
       const actual = await redditApi.getSubscribedSubreddits(
-        dummyCallbackFunction()
+        dummyCallbackFunction(),
       );
 
       const expected = [...Array(100).keys()].map(
-        (i) => new Subreddit("subreddit" + i)
+        (i) => new Subreddit("subreddit" + i),
       );
       expect(actual).length(100).to.have.deep.members(expected);
       expect(callbackCollector).to.have.members(
-        [...Array(100).keys()].map((i) => i + 1)
+        [...Array(100).keys()].map((i) => i + 1),
       );
     });
   });
@@ -130,7 +130,7 @@ describe("RedditApi.ts", () => {
               subreddits: [{ name: "subreddits1" }, { name: "subreddits3" }],
             },
           },
-        ])
+        ]),
       );
 
       const actual = await redditApi.getMultiMine();
@@ -139,12 +139,12 @@ describe("RedditApi.ts", () => {
         new MultiReddit(
           "multi1",
           "path1",
-          new Set<string>(["subreddits1", "subreddits2"])
+          new Set<string>(["subreddits1", "subreddits2"]),
         ),
         new MultiReddit(
           "multi2",
           "path2",
-          new Set<string>(["subreddits1", "subreddits3"])
+          new Set<string>(["subreddits1", "subreddits3"]),
         ),
       ]);
     });
@@ -163,7 +163,7 @@ describe("RedditApi.ts", () => {
             action: "sub",
             sr_name: "subreddits",
           },
-        }
+        },
       );
     });
   });
@@ -181,7 +181,7 @@ describe("RedditApi.ts", () => {
             action: "unsub",
             sr_name: "subreddits",
           },
-        }
+        },
       );
     });
   });
@@ -203,7 +203,7 @@ describe("RedditApi.ts", () => {
               subreddits: [{ name: "subreddits1" }, { name: "subreddits2" }],
             },
           },
-        }
+        },
       );
     });
   });

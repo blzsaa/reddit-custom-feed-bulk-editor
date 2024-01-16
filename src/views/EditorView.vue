@@ -159,7 +159,7 @@ onMounted(async () => {
 
 const onChangeSubscriptionStatus = (
   newStatus: boolean,
-  props: { name: string }
+  props: { name: string },
 ) => {
   multiFeedStore.changeSubscriptionStatus(props.name, newStatus);
 };
@@ -167,12 +167,12 @@ const onChangeSubscriptionStatus = (
 const onChangeCustomFeedStatus = (
   nameOfTheMulti: string,
   nameOfTheSubreddit: string,
-  newStatus: boolean
+  newStatus: boolean,
 ) => {
   multiFeedStore.changeCustomFeedStatus(
     nameOfTheMulti,
     nameOfTheSubreddit,
-    newStatus
+    newStatus,
   );
 };
 

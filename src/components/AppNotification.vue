@@ -14,7 +14,7 @@ watch(
       toast.add(notification);
     }
   },
-  { deep: true }
+  { deep: true },
 );
 </script>
 

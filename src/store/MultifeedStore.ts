@@ -40,9 +40,9 @@ export const useMultiFeedStore = defineStore("multi-feed", {
         notificationStore.addNotification(
           new NotificationEvent(
             "error",
-            `Custom feeds cannot have more than 100 subreddits`
+            `Custom feeds cannot have more than 100 subreddits`,
             // nameOfMultis
-          )
+          ),
         );
       }
       return isValid;
@@ -55,7 +55,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     async extractAccessToken(href: string) {
       this.accessToken = await new AccessTokenFactory().extractAccessToken(
         axios.create({ baseURL: import.meta.env.VITE_REDDIT_URL }),
-        href
+        href,
       );
     },
     async initService() {
@@ -73,18 +73,22 @@ export const useMultiFeedStore = defineStore("multi-feed", {
           if (error.response.status === 401) {
             this.accessToken = "";
             notificationStore.addNotification(
-              new NotificationEvent("error", "Timeout", "Please reauthenticate")
+              new NotificationEvent(
+                "error",
+                "Timeout",
+                "Please reauthenticate",
+              ),
             );
             router.push({ path: "/" });
           }
           return Promise.reject(error);
-        }
+        },
       );
 
       this.multisService = new MultisService(new RedditApi(axiosInstance));
     },
     async readMultiFeedInformationFromReddit(
-      callbackFunction: (stats: LoadingStatsCallback) => void
+      callbackFunction: (stats: LoadingStatsCallback) => void,
     ) {
       await Promise.all([
         this.multisService
@@ -92,7 +96,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
             callbackFunction({
               kind: "LoadedSubreddits",
               loadedSubreddits: n,
-            })
+            }),
           )
           .then((m) => {
             callbackFunction({
@@ -110,7 +114,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
       this.filters = generateFiltersForDataTable(this.multis);
       this.dataTableContent = this.multisService.mapToDatatableRows(
         this.subreddits,
-        this.multis
+        this.multis,
       );
       callbackFunction({ kind: "DataProcessed" });
     },
@@ -124,7 +128,7 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     changeCustomFeedStatus(
       nameOfTheMulti: string,
       nameOfTheSubreddit: string,
-      newStatus: boolean
+      newStatus: boolean,
     ) {
       const find = this.multis.find((a) => a.display_name == nameOfTheMulti);
       if (!find) {
@@ -141,16 +145,16 @@ export const useMultiFeedStore = defineStore("multi-feed", {
     async commitChanges() {
       const notificationStore = useNotificationStore();
       notificationStore.addNotification(
-        new NotificationEvent("info", "Saving changes")
+        new NotificationEvent("info", "Saving changes"),
       );
       await this.multisService.commitChanges(
         this.subredditChanges,
-        Array.from(this.changedMultis)
+        Array.from(this.changedMultis),
       );
       this.changedMultis.clear();
       this.subredditChanges.clear();
       notificationStore.addNotification(
-        new NotificationEvent("success", "Saved")
+        new NotificationEvent("success", "Saved"),
       );
     },
   },

@@ -39,7 +39,7 @@ describe("DataTableCustomFilterService.ts", () => {
               matchMode: FilterMatchMode.EQUALS,
             },
           });
-        }
+        },
       );
     });
   });

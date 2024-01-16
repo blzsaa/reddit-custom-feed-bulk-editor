@@ -5,7 +5,7 @@ export class MultisService {
   constructor(private redditApi: RedditApi) {}
 
   getSubscribedSubreddits(
-    callbackFunction: (result: number) => void
+    callbackFunction: (result: number) => void,
   ): Promise<Subreddit[]> {
     return this.redditApi.getSubscribedSubreddits(callbackFunction);
   }
@@ -20,7 +20,7 @@ export class MultisService {
 
   commitChanges(
     subredditChanges: Map<string, Action>,
-    customFeedWithChanges: MultiReddit[]
+    customFeedWithChanges: MultiReddit[],
   ): Promise<void[]> {
     const subredditsToSubscribe = [] as string[];
     const subredditsToUnsubscribe = [] as string[];
@@ -32,8 +32,8 @@ export class MultisService {
     const promises: Promise<void>[] = customFeedWithChanges.map((m) =>
       this.redditApi.updateMulti(
         m.path,
-        Array.from(m.subreddits).map((s) => ({ name: s }))
-      )
+        Array.from(m.subreddits).map((s) => ({ name: s })),
+      ),
     );
     if (subredditsToSubscribe.length !== 0) {
       const toSubscribe = subredditsToSubscribe.join(",");
@@ -48,7 +48,7 @@ export class MultisService {
 
   mapToDatatableRows(
     subreddits: Subreddit[],
-    multis: MultiReddit[]
+    multis: MultiReddit[],
   ): DatatableRow[] {
     const dummyDataTableRow = { name: "", subscribed: false } as DatatableRow;
     multis.forEach((m) => (dummyDataTableRow[m.display_name] = false));
@@ -83,7 +83,7 @@ export class MultisService {
         }
         return map;
       },
-      subscribedSubreddits
+      subscribedSubreddits,
     );
 
     return [...subscribedAndMultireddits].map((a) => {

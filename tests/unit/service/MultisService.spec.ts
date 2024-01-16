@@ -17,12 +17,12 @@ describe("MultisService.ts", () => {
     new MultiReddit(
       "displayNameMultiReddit1",
       "path1",
-      new Set<string>(["a", "b", "displayNameSubreddits1"])
+      new Set<string>(["a", "b", "displayNameSubreddits1"]),
     ),
     new MultiReddit(
       "displayNameMultiReddit2",
       "path2",
-      new Set<string>(["a", "c"])
+      new Set<string>(["a", "c"]),
     ),
   ];
 
@@ -40,7 +40,7 @@ describe("MultisService.ts", () => {
         .mockReturnValue(onfulfilled);
 
       const actual = await multisService.getSubscribedSubreddits(
-        dummyCallbackFunction
+        dummyCallbackFunction,
       );
 
       expect(actual).to.be.eql(subreddits);
@@ -91,7 +91,7 @@ describe("MultisService.ts", () => {
       it("should merge the two inputs", function () {
         const actual = multisService.mapToDatatableRows(
           subreddits,
-          multiRedditArray
+          multiRedditArray,
         );
 
         expect(actual).to.be.eql([

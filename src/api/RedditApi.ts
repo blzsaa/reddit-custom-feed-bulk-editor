@@ -9,7 +9,7 @@ export class RedditApi {
   }
 
   public async getSubscribedSubreddits(
-    callbackFunction: (result: number) => void
+    callbackFunction: (result: number) => void,
   ): Promise<Subreddit[]> {
     let after = null;
     const result: Subreddit[] = [];
@@ -47,8 +47,8 @@ export class RedditApi {
         new MultiReddit(
           d.data.display_name,
           d.data.path,
-          new Set<string>(d.data.subreddits.map((a) => a.name))
-        )
+          new Set<string>(d.data.subreddits.map((a) => a.name)),
+        ),
     );
   }
 
@@ -61,7 +61,7 @@ export class RedditApi {
           action: "sub",
           sr_name: subreddits,
         },
-      }
+      },
     );
   }
 
@@ -74,13 +74,13 @@ export class RedditApi {
           action: "unsub",
           sr_name: subreddits,
         },
-      }
+      },
     );
   }
 
   public async updateMulti(
     multiPath: string,
-    subreddits: { name: string }[]
+    subreddits: { name: string }[],
   ): Promise<void> {
     return this.instance.put(
       `/api/multi${multiPath}`,
@@ -91,7 +91,7 @@ export class RedditApi {
             subreddits: subreddits,
           },
         },
-      }
+      },
     );
   }
 }
