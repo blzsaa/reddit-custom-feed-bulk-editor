@@ -19,7 +19,7 @@ describe("Editor page", () => {
             access_token: "access_token",
           },
         });
-      }
+      },
     ).as("retrieving the access token");
 
     cy.intercept(
@@ -50,7 +50,7 @@ describe("Editor page", () => {
             },
           },
         });
-      }
+      },
     ).as("retrieving all subreddits");
 
     cy.intercept(
@@ -84,13 +84,13 @@ describe("Editor page", () => {
             },
           ],
         });
-      }
+      },
     ).as("retrieving all multireddits");
   });
 
   it("should load data to a visual table", () => {
     cy.visit(
-      "/authorize_callback#code=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
+      "/authorize_callback#code=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe",
     );
 
     getHeaderAt({ row: 1 }).should("contain.text", "name");
@@ -108,11 +108,11 @@ describe("Editor page", () => {
 
   it("should be able to filter data", () => {
     cy.visit(
-      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
+      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe",
     );
 
     cy.get(
-      ":nth-child(3) > .p-column-filter > .p-fluid > .p-checkbox > .p-checkbox-box"
+      ":nth-child(3) > .p-column-filter > .p-fluid > .p-checkbox > .p-checkbox-box",
     ).click();
 
     getCellAt({ column: 1, row: 1 }).should("contain.text", "subreddit1");
@@ -126,25 +126,25 @@ describe("Editor page", () => {
     cy.intercept(
       "PUT",
       "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi1/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit4%22%7D]%7D",
-      { statusCode: 200 }
+      { statusCode: 200 },
     ).as("multi1");
     cy.intercept(
       "PUT",
       "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi2/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit1%22%7D,%7B%22name%22:%22subreddit3%22%7D]%7D",
-      { statusCode: 200 }
+      { statusCode: 200 },
     ).as("multi2");
     cy.intercept(
       "POST",
       "https://oauth.mock-reddit.com/api/subscribe?action=sub&sr_name=subreddit3",
-      { statusCode: 200 }
+      { statusCode: 200 },
     ).as("sub");
     cy.intercept(
       "POST",
       "https://oauth.mock-reddit.com/api/subscribe?action=unsub&sr_name=subreddit1",
-      { statusCode: 200 }
+      { statusCode: 200 },
     ).as("unsub");
     cy.visit(
-      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
+      "/authorize_callback#access_token=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe",
     );
     cy.get(".subreddit1_subscribed").click();
     cy.get(".subreddit3_subscribed").click();
@@ -164,12 +164,12 @@ describe("Editor page", () => {
 
   function getHeaderAt(param) {
     return cy.get(
-      `.p-datatable-thead > :nth-child(1) > :nth-child(${param.row})`
+      `.p-datatable-thead > :nth-child(1) > :nth-child(${param.row})`,
     );
   }
   function getCellAt(param) {
     return cy.get(
-      `.p-datatable-tbody > :nth-child(${param.column}) > :nth-child(${param.row})`
+      `.p-datatable-tbody > :nth-child(${param.column}) > :nth-child(${param.row})`,
     );
   }
 });

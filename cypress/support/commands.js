@@ -3,7 +3,7 @@ Cypress.Commands.add(
   { prevSubject: "element" },
   (subject) => {
     return cy.get(subject).should("have.class", "p-checkbox-checked");
-  }
+  },
 );
 
 Cypress.Commands.add(
@@ -11,5 +11,5 @@ Cypress.Commands.add(
   { prevSubject: "element" },
   (subject) => {
     return cy.get(subject).should("not.have.class", "p-checkbox-checked");
-  }
+  },
 );

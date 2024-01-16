@@ -15,12 +15,12 @@ describe("MultiFeed Store", () => {
     new MultiReddit(
       "displayNameMultiReddit1",
       "path1",
-      new Set<string>(["a", "b", "displayNameSubreddits1"])
+      new Set<string>(["a", "b", "displayNameSubreddits1"]),
     ),
     new MultiReddit(
       "displayNameMultiReddit2",
       "path2",
-      new Set<string>(["a", "c"])
+      new Set<string>(["a", "c"]),
     ),
   ];
   beforeEach(() => {
@@ -63,7 +63,7 @@ describe("MultiFeed Store", () => {
         return Promise.resolve(subreddits);
       });
       multiService.getMultiMine.mockReturnValue(
-        Promise.resolve(multiRedditArray)
+        Promise.resolve(multiRedditArray),
       );
       multiService.getNameOfMultis.mockReturnValue([
         "displayNameMultiReddit1",
@@ -177,7 +177,7 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "differentMulti",
           "path",
-          new Set<string>(["subreddit1"])
+          new Set<string>(["subreddit1"]),
         ),
       ];
 
@@ -186,7 +186,7 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "differentMulti",
           "path",
-          new Set<string>(["subreddit1"])
+          new Set<string>(["subreddit1"]),
         ),
       ]);
       expect(store.changedMultis).to.be.empty;
@@ -197,12 +197,12 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "multi1",
           "path",
-          new Set<string>(["differentSubreddit"])
+          new Set<string>(["differentSubreddit"]),
         ),
         new MultiReddit(
           "differentMulti",
           "path",
-          new Set<string>(["subreddit1"])
+          new Set<string>(["subreddit1"]),
         ),
       ];
 
@@ -212,19 +212,19 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "multi1",
           "path",
-          new Set<string>(["differentSubreddit", "subreddit1"])
+          new Set<string>(["differentSubreddit", "subreddit1"]),
         ),
         new MultiReddit(
           "differentMulti",
           "path",
-          new Set<string>(["subreddit1"])
+          new Set<string>(["subreddit1"]),
         ),
       ]);
       expect([...store.changedMultis]).to.be.eql([
         new MultiReddit(
           "multi1",
           "path",
-          new Set<string>(["differentSubreddit", "subreddit1"])
+          new Set<string>(["differentSubreddit", "subreddit1"]),
         ),
       ]);
     });
@@ -234,12 +234,12 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "multi1",
           "path",
-          new Set<string>(["subreddit1", "differentSubreddit"])
+          new Set<string>(["subreddit1", "differentSubreddit"]),
         ),
         new MultiReddit(
           "differentMulti",
           "path",
-          new Set<string>(["subreddit1"])
+          new Set<string>(["subreddit1"]),
         ),
       ];
 
@@ -249,19 +249,19 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "multi1",
           "path",
-          new Set<string>(["differentSubreddit"])
+          new Set<string>(["differentSubreddit"]),
         ),
         new MultiReddit(
           "differentMulti",
           "path",
-          new Set<string>(["subreddit1"])
+          new Set<string>(["subreddit1"]),
         ),
       ]);
       expect([...store.changedMultis]).to.be.eql([
         new MultiReddit(
           "multi1",
           "path",
-          new Set<string>(["differentSubreddit"])
+          new Set<string>(["differentSubreddit"]),
         ),
       ]);
     });
@@ -277,12 +277,12 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "displayNameMultiReddit1",
           "path1",
-          createMultiRedditWithFixedSizeSubredditsInIt(99)
+          createMultiRedditWithFixedSizeSubredditsInIt(99),
         ),
         new MultiReddit(
           "displayNameMultiReddit2",
           "path2",
-          createMultiRedditWithFixedSizeSubredditsInIt(100)
+          createMultiRedditWithFixedSizeSubredditsInIt(100),
         ),
       ]);
       expect(store.isValid).to.be.true;
@@ -295,12 +295,12 @@ describe("MultiFeed Store", () => {
         new MultiReddit(
           "displayNameMultiReddit1",
           "path1",
-          createMultiRedditWithFixedSizeSubredditsInIt(99)
+          createMultiRedditWithFixedSizeSubredditsInIt(99),
         ),
         new MultiReddit(
           "displayNameMultiReddit2",
           "path1",
-          createMultiRedditWithFixedSizeSubredditsInIt(101)
+          createMultiRedditWithFixedSizeSubredditsInIt(101),
         ),
       ]);
       expect(store.isValid).to.be.false;

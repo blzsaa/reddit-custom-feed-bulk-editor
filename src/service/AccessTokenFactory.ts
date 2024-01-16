@@ -3,7 +3,7 @@ import type { AxiosInstance } from "axios";
 export class AccessTokenFactory {
   public async extractAccessToken(
     instance: AxiosInstance,
-    href: string
+    href: string,
   ): Promise<string> {
     console.log(import.meta.env.VITE_CLIENT_ID);
     const code = new URL(href).searchParams.get("code");
@@ -16,7 +16,7 @@ export class AccessTokenFactory {
           username: import.meta.env.VITE_CLIENT_ID,
           password: "",
         },
-      }
+      },
     );
     return response.data.access_token;
   }

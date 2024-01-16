@@ -15,7 +15,7 @@ describe("AccessTokenFactory.ts", () => {
     it("should call access_token api with it", async function () {
       const code = "MYCODE";
       const redirectUri = encodeURIComponent(
-        "http://localhost:8080/authorize_callback"
+        "http://localhost:8080/authorize_callback",
       );
       const href = `https://localhost:8080?code=${code}`;
       axiosInstance.post
@@ -26,8 +26,8 @@ describe("AccessTokenFactory.ts", () => {
             (actualValue) =>
               "myClientId" === actualValue?.auth?.username &&
               "" === actualValue?.auth?.password,
-            "matcher"
-          )
+            "matcher",
+          ),
         )
         .mockResolvedValue({
           data: {
@@ -37,7 +37,7 @@ describe("AccessTokenFactory.ts", () => {
 
       const actual = await accessTokenFactory.extractAccessToken(
         axiosInstance,
-        href
+        href,
       );
 
       expect(actual).to.be.eql("expectedAccessToken");

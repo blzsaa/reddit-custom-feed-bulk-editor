@@ -6,7 +6,7 @@ export class MultiReddit {
   constructor(
     public display_name: string,
     public path: string,
-    public subreddits: Set<string>
+    public subreddits: Set<string>,
   ) {}
 }
 
@@ -50,6 +50,6 @@ export class NotificationEvent {
     readonly severity: "info" | "success" | "warn" | "error",
     readonly summary: string,
     readonly detail: string | undefined = undefined,
-    readonly life: number = 3000
+    readonly life: number = 3000,
   ) {}
 }

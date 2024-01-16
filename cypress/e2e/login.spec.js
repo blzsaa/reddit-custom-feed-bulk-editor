@@ -4,7 +4,7 @@ describe("Login page", () => {
 
     cy.contains(
       ".hello > p",
-      "To use this page you first have to allow reddit-custom-feed-bulk-editor to access which subreddits and multireddits you are subscriber to."
+      "To use this page you first have to allow reddit-custom-feed-bulk-editor to access which subreddits and multireddits you are subscriber to.",
     );
   });
 
@@ -21,7 +21,7 @@ describe("Login page", () => {
           "state=STATE&" +
           "redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauthorize_callback&" +
           "duration=temporary&" +
-          "scope=mysubreddits%20read%20subscribe"
+          "scope=mysubreddits%20read%20subscribe",
       );
   });
 });

@@ -23,7 +23,7 @@ describe("In case of 401 unauthorized return vale from reddit", () => {
             access_token: "access_token",
           },
         });
-      }
+      },
     ).as("retrieving the access token");
 
     cy.intercept(
@@ -37,13 +37,13 @@ describe("In case of 401 unauthorized return vale from reddit", () => {
         req.reply({
           statusCode: 401,
         });
-      }
+      },
     ).as("retrieving all subreddits");
   });
 
   it("should redirect to Home and delete accessToken from store", () => {
     cy.visit(
-      "/authorize_callback#code=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe"
+      "/authorize_callback#code=access_token&token_type=bearer&state=STATE&expires_in=3600&scope=mysubreddits+read+subscribe",
     );
 
     cy.url().should("contain", "http://localhost:8080/");
