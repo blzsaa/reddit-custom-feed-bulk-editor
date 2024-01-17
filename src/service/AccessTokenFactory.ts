@@ -1,23 +1,24 @@
-import type { AxiosInstance } from "axios";
+import type { KyInstance } from "ky";
 
 export class AccessTokenFactory {
   public async extractAccessToken(
-    instance: AxiosInstance,
+    instance: KyInstance,
     href: string,
   ): Promise<string> {
-    console.log(import.meta.env.VITE_CLIENT_ID);
     const code = new URL(href).searchParams.get("code");
     const redirectUri = encodeURIComponent(import.meta.env.VITE_REDIRECT_URI);
-    const response: { data: { access_token: string } } = await instance.post(
-      "/api/v1/access_token",
-      `grant_type=authorization_code&code=${code}&redirect_uri=${redirectUri}`,
-      {
-        auth: {
-          username: import.meta.env.VITE_CLIENT_ID,
-          password: "",
+
+    const username = import.meta.env.VITE_CLIENT_ID;
+    const password = "";
+    const response: { access_token: string } = await instance
+      .post("api/v1/access_token", {
+        body: `grant_type=authorization_code&code=${code}&redirect_uri=${redirectUri}`,
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          Authorization: "Basic " + btoa(username + ":" + password),
         },
-      },
-    );
-    return response.data.access_token;
+      })
+      .json();
+    return response.access_token;
   }
 }
