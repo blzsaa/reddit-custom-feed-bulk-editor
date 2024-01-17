@@ -10,7 +10,7 @@ import {
 import { MultisService } from "@/service/MultisService";
 import { AccessTokenFactory } from "@/service/AccessTokenFactory";
 import { generateFiltersForDataTable } from "@/service/DataTableCustomFilterService";
-import axios from "axios";
+import ky from "ky";
 import { RedditApi } from "@/api/RedditApi";
 import router from "@/router";
 import { useNotificationStore } from "@/store/NotificationStore";
@@ -41,7 +41,6 @@ export const useMultiFeedStore = defineStore("multi-feed", {
           new NotificationEvent(
             "error",
             `Custom feeds cannot have more than 100 subreddits`,
-            // nameOfMultis
           ),
         );
       }
@@ -54,38 +53,47 @@ export const useMultiFeedStore = defineStore("multi-feed", {
   actions: {
     async extractAccessToken(href: string) {
       this.accessToken = await new AccessTokenFactory().extractAccessToken(
-        axios.create({ baseURL: import.meta.env.VITE_REDDIT_URL }),
+        ky.extend({
+          prefixUrl: import.meta.env.VITE_REDDIT_URL,
+          timeout: 5000,
+        }),
         href,
       );
     },
     async initService() {
-      const axiosInstance = axios.create({
-        baseURL: import.meta.env.VITE_OAUTH_REDDIT_URL,
+      const api = ky.extend({
+        prefixUrl: import.meta.env.VITE_OAUTH_REDDIT_URL,
         timeout: 5000,
-        headers: {
-          Authorization: "bearer " + this.accessToken,
+        hooks: {
+          beforeRequest: [
+            (request) => {
+              request.headers.set(
+                "Authorization",
+                "bearer " + this.accessToken,
+              );
+            },
+          ],
+          beforeError: [
+            (error) => {
+              const notificationStore = useNotificationStore();
+              if (error.response.status === 401) {
+                this.accessToken = "";
+                notificationStore.addNotification(
+                  new NotificationEvent(
+                    "error",
+                    "Timeout",
+                    "Please reauthenticate",
+                  ),
+                );
+                router.push({ path: "/" });
+              }
+              return error;
+            },
+          ],
         },
       });
-      axiosInstance.interceptors.response.use(
-        (response) => response,
-        (error) => {
-          const notificationStore = useNotificationStore();
-          if (error.response.status === 401) {
-            this.accessToken = "";
-            notificationStore.addNotification(
-              new NotificationEvent(
-                "error",
-                "Timeout",
-                "Please reauthenticate",
-              ),
-            );
-            router.push({ path: "/" });
-          }
-          return Promise.reject(error);
-        },
-      );
 
-      this.multisService = new MultisService(new RedditApi(axiosInstance));
+      this.multisService = new MultisService(new RedditApi(api));
     },
     async readMultiFeedInformationFromReddit(
       callbackFunction: (stats: LoadingStatsCallback) => void,

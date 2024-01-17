@@ -1,10 +1,10 @@
-import type { AxiosInstance } from "axios";
 import { MultiReddit, Subreddit } from "@/types";
+import type { KyInstance } from "ky";
 
 export class RedditApi {
-  private instance: AxiosInstance;
+  private instance: KyInstance;
 
-  constructor(instance: AxiosInstance) {
+  constructor(instance: KyInstance) {
     this.instance = instance;
   }
 
@@ -15,16 +15,18 @@ export class RedditApi {
     const result: Subreddit[] = [];
     let i = 0;
     do {
+      const searchParams = new URLSearchParams({ limit: "100" });
+      if (after) {
+        searchParams.append("after", after);
+      }
+
       const response: {
-        data: { data: { after: string; children: { data: Subreddit }[] } };
-      } = await this.instance.get("/subreddits/mine/subscriber", {
-        params: {
-          after: after,
-          limit: 100,
-        },
-      });
-      after = response.data.data.after;
-      result.push(...response.data.data.children.map((c) => c.data));
+        data: { after: string; children: { data: Subreddit }[] };
+      } = await this.instance
+        .get("subreddits/mine/subscriber", { searchParams: searchParams })
+        .json();
+      after = response.data.after;
+      result.push(...response.data.children.map((c) => c.data));
       callbackFunction(result.length);
       i++;
     } while (after !== null && i < 100);
@@ -34,15 +36,14 @@ export class RedditApi {
   public async getMultiMine(): Promise<MultiReddit[]> {
     const response: {
       data: {
-        data: {
-          display_name: string;
-          path: string;
-          subreddits: { name: string }[];
-        };
-      }[];
-    } = await this.instance.get("/api/multi/mine");
+        display_name: string;
+        path: string;
+        subreddits: { name: string }[];
+      };
+    }[] = await this.instance.get("api/multi/mine").json();
 
-    return response.data.map(
+    console.log(response);
+    return response.map(
       (d) =>
         new MultiReddit(
           d.data.display_name,
@@ -53,45 +54,37 @@ export class RedditApi {
   }
 
   public async subscribeToSubreddits(subreddits: string): Promise<void> {
-    return this.instance.post(
-      "/api/subscribe",
-      {},
-      {
-        params: {
+    return this.instance
+      .post("api/subscribe", {
+        searchParams: new URLSearchParams({
           action: "sub",
           sr_name: subreddits,
-        },
-      },
-    );
+        }),
+      })
+      .json();
   }
 
   public async unsubscribeToSubreddits(subreddits: string): Promise<void> {
-    return this.instance.post(
-      "/api/subscribe",
-      {},
-      {
-        params: {
-          action: "unsub",
-          sr_name: subreddits,
-        },
-      },
-    );
+    const searchParams = new URLSearchParams({
+      action: "unsub",
+      sr_name: subreddits,
+    });
+    return this.instance
+      .post("api/subscribe", { searchParams: searchParams })
+      .json();
   }
 
   public async updateMulti(
     multiPath: string,
     subreddits: { name: string }[],
   ): Promise<void> {
-    return this.instance.put(
-      `/api/multi${multiPath}`,
-      {},
-      {
-        params: {
-          model: {
-            subreddits: subreddits,
-          },
-        },
-      },
-    );
+    const searchParams = new URLSearchParams({
+      model: JSON.stringify({
+        subreddits: subreddits,
+      }),
+    });
+    return this.instance
+      .put(`api/multi${multiPath}`, { searchParams: searchParams })
+      .json();
   }
 }

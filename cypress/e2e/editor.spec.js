@@ -125,12 +125,12 @@ describe("Editor page", () => {
   it("should be able modify subscription and multis", () => {
     cy.intercept(
       "PUT",
-      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi1/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit4%22%7D]%7D",
+      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi1/?model=%7B%22subreddits%22%3A%5B%7B%22name%22%3A%22subreddit4%22%7D%5D%7D",
       { statusCode: 200 },
     ).as("multi1");
     cy.intercept(
       "PUT",
-      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi2/?model=%7B%22subreddits%22:[%7B%22name%22:%22subreddit1%22%7D,%7B%22name%22:%22subreddit3%22%7D]%7D",
+      "https://oauth.mock-reddit.com/api/multi/user/userName/m/multi2/?model=%7B%22subreddits%22%3A%5B%7B%22name%22%3A%22subreddit1%22%7D%2C%7B%22name%22%3A%22subreddit3%22%7D%5D%7D",
       { statusCode: 200 },
     ).as("multi2");
     cy.intercept(
