@@ -22,6 +22,7 @@ import Divider from "primevue/divider";
 import InputText from "primevue/inputtext";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
+import Sidebar from "primevue/sidebar";
 import Skeleton from "primevue/skeleton";
 import Toast from "primevue/toast";
 import Toolbar from "primevue/toolbar";
@@ -46,6 +47,7 @@ createApp(App)
   .component("InputText", InputText)
   .component("Panel", Panel)
   .component("ProgressSpinner", ProgressSpinner)
+  .component("Sidebar", Sidebar)
   .component("Skeleton", Skeleton)
   .component("Toast", Toast)
   .component("Toolbar", Toolbar)

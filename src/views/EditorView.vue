@@ -2,6 +2,7 @@
   <div ref="appHeaderDiv">
     <app-header />
   </div>
+  <app-side-menu />
   <loading-mask
     :loading-stats="loadingState"
     v-if="dataTableContent.length === 0"
@@ -114,6 +115,7 @@ import type {
   DataTableSortMeta,
 } from "primevue/datatable";
 import AppHeader from "@/components/AppHeader.vue";
+import AppSideMenu from "@/components/AppSideMenu.vue";
 
 const nameOfMultis = ref<string[]>([]);
 const dataTableContent = ref<DatatableRow[]>([]);
