@@ -1,4 +1,7 @@
 <template>
+  <div ref="appHeaderDiv">
+    <app-header />
+  </div>
   <loading-mask
     :loading-stats="loadingState"
     v-if="dataTableContent.length === 0"
@@ -18,20 +21,8 @@
     filterDisplay="row"
     :scrollable="true"
     scrollHeight="flex"
-    style="height: 100vh"
+    :style="`height: calc(100vh - ${appHeaderDiv?.clientHeight || 0}px);`"
   >
-    <template #header>
-      <div>
-        <Button
-          icon="pi pi-check"
-          :disabled="!multiFeedStore.isValid"
-          @click="save()"
-          label="save"
-          style="float: left"
-        />
-        Add or remove subreddits from custom-feeds
-      </div>
-    </template>
     <template #empty
       >Did not found any subscribed subreddits nor any multis.</template
     >
@@ -122,6 +113,7 @@ import type {
   DataTableFilterMeta,
   DataTableSortMeta,
 } from "primevue/datatable";
+import AppHeader from "@/components/AppHeader.vue";
 
 const nameOfMultis = ref<string[]>([]);
 const dataTableContent = ref<DatatableRow[]>([]);
@@ -176,12 +168,10 @@ const onChangeCustomFeedStatus = (
   );
 };
 
+const appHeaderDiv = ref<HTMLElement | undefined>(undefined);
+
 function subredditLink(nameOfSubreddit: string) {
   return `${import.meta.env.VITE_REDDIT_URL}/r/${nameOfSubreddit}`;
-}
-
-async function save() {
-  await multiFeedStore.commitChanges();
 }
 </script>
 <style>

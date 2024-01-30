@@ -24,6 +24,7 @@ import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
 import Skeleton from "primevue/skeleton";
 import Toast from "primevue/toast";
+import Toolbar from "primevue/toolbar";
 import TriStateCheckbox from "primevue/tristatecheckbox";
 
 const pinia = createPinia();
@@ -47,5 +48,6 @@ createApp(App)
   .component("ProgressSpinner", ProgressSpinner)
   .component("Skeleton", Skeleton)
   .component("Toast", Toast)
+  .component("Toolbar", Toolbar)
   .component("TriStateCheckbox", TriStateCheckbox)
   .mount("#app");
