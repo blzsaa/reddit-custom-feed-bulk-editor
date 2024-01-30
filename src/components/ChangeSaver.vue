@@ -14,5 +14,6 @@ async function save() {
     :disabled="!multiFeedStore.isValid"
     @click="save()"
     label="save"
+    id="save-btn"
   />
 </template>

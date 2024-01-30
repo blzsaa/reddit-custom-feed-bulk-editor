@@ -150,7 +150,7 @@ describe("Editor page", () => {
     cy.get(".subreddit3_subscribed").click();
     cy.get(".subreddit1_multi1").click();
     cy.get(".subreddit2_multi2").click();
-    cy.get(".p-button").click();
+    cy.get("#save-btn").click();
 
     cy.get(".subreddit1_subscribed").shouldNotBeChecked();
     cy.get(".subreddit3_subscribed").shouldBeChecked();
