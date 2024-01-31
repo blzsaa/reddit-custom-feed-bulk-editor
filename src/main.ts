@@ -12,6 +12,7 @@ import Tooltip from "primevue/tooltip";
 import { createPinia } from "pinia";
 import "primeflex/primeflex.css";
 
+import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import Chip from "primevue/chip";
@@ -37,6 +38,7 @@ createApp(App)
   .use(PrimeVue)
   .use(ToastService)
   .directive("tooltip", Tooltip)
+  .component("AutoComplete", AutoComplete)
   .component("Button", Button)
   .component("Checkbox", Checkbox)
   .component("Chip", Chip)

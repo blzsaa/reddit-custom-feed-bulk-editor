@@ -207,6 +207,39 @@ describe("RedditApi.ts", () => {
     });
   });
 
+  describe("when calling findSubredditsByPrefix", function () {
+    it("should delegate to reddit and return with a list of displayNames only", async () => {
+      const response = {
+        data: {
+          children: [
+            { data: { display_name: "subreddit1" } },
+            { data: { display_name: "subreddit2" } },
+            { data: { display_name: "subreddit3" } },
+          ],
+        },
+      };
+      httpClient.get.mockReturnValue(withKyResponse(response));
+
+      const actual = await redditApi.findSubredditsByPrefix("prefix");
+
+      expect(actual).to.be.deep.equals([
+        "subreddit1",
+        "subreddit2",
+        "subreddit3",
+      ]);
+      expect(httpClient.get).toHaveBeenCalledOnce();
+      expect(httpClient.get).toBeCalledWith("api/subreddit_autocomplete_v2", {
+        searchParams: {
+          query: "prefix",
+          include_over_18: true,
+          include_profiles: false,
+          limit: 10,
+          typeahead_active: true,
+        },
+      });
+    });
+  });
+
   function withKyResponse<T>(t: T) {
     const responsePromise = mock<ResponsePromise>();
     responsePromise.json.mockReturnValue(Promise.resolve(t));

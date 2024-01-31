@@ -10,6 +10,7 @@ const menuStore = useMenuStore();
     <Toolbar>
       <template #start>
         <Button
+          id="menu-btn"
           icon="pi pi-bars"
           @click="menuStore.toggle()"
           style="color: black"

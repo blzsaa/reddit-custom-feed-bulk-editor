@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MultiReddit, Subreddit } from "@/types";
 import { RedditApi } from "@/api/RedditApi";
 import { MultisService } from "@/service/MultisService";
@@ -127,6 +127,22 @@ describe("MultisService.ts", () => {
           },
         ]);
       });
+    });
+  });
+
+  describe("when calling findSubredditsByPrefix", function () {
+    it("should delegate to redditApi", async function () {
+      redditApi.findSubredditsByPrefix
+        .calledWith("prefix")
+        .mockResolvedValue(["subreddit1", "subreddit2", "subreddit3"]);
+
+      const actual = await multisService.findSubredditsByPrefix("prefix");
+
+      expect(actual).to.be.deep.equals([
+        "subreddit1",
+        "subreddit2",
+        "subreddit3",
+      ]);
     });
   });
 });
