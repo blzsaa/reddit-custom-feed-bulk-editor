@@ -2,7 +2,10 @@
   <div ref="appHeaderDiv">
     <app-header />
   </div>
-  <app-side-menu />
+  <app-side-menu
+    :column-options="selectedColumns"
+    @update-selected-columns="updateSelectedColumns"
+  />
   <loading-mask
     :loading-stats="loadingState"
     v-if="dataTableContent.length === 0"
@@ -78,7 +81,7 @@
       </template>
     </Column>
     <Column
-      v-for="multi of nameOfMultis"
+      v-for="multi of selectedColumnsAsString"
       :field="multi"
       :header="multi"
       :key="multi"
@@ -117,7 +120,8 @@ import type {
 import AppHeader from "@/components/AppHeader.vue";
 import AppSideMenu from "@/components/AppSideMenu.vue";
 
-const nameOfMultis = ref<string[]>([]);
+const selectedColumnsAsString = ref<string[]>([]);
+const selectedColumns = ref<{ name: string; selected: boolean }[]>([]);
 const dataTableContent = ref<DatatableRow[]>([]);
 const filters = ref<DataTableFilterMeta | undefined>(undefined);
 const multiFeedStore = useMultiFeedStore();
@@ -147,7 +151,13 @@ onMounted(async () => {
   });
 
   dataTableContent.value = multiFeedStore.dataTableContent;
-  nameOfMultis.value = multiFeedStore.nameOfMultis;
+  selectedColumns.value = multiFeedStore.nameOfMultis.map((multi) => ({
+    name: multi,
+    selected: true,
+  }));
+  selectedColumnsAsString.value = selectedColumns.value
+    .filter((col) => col.selected)
+    .map((col) => col.name);
   filters.value = multiFeedStore.filters;
 });
 
@@ -174,6 +184,15 @@ const appHeaderDiv = ref<HTMLElement | undefined>(undefined);
 
 function subredditLink(nameOfSubreddit: string) {
   return `${import.meta.env.VITE_REDDIT_URL}/r/${nameOfSubreddit}`;
+}
+function updateSelectedColumns(
+  newSelectedColumns: { name: string; selected: boolean }[],
+): void {
+  console.log(newSelectedColumns);
+  selectedColumns.value = newSelectedColumns;
+  selectedColumnsAsString.value = selectedColumns.value
+    .filter((col) => col.selected)
+    .map((col) => col.name);
 }
 </script>
 <style>

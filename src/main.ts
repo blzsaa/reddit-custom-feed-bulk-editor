@@ -21,6 +21,7 @@ import DataTable from "primevue/datatable";
 import Dialog from "primevue/dialog";
 import Divider from "primevue/divider";
 import InputText from "primevue/inputtext";
+import MultiSelect from "primevue/multiselect";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
 import Sidebar from "primevue/sidebar";
@@ -47,6 +48,7 @@ createApp(App)
   .component("Dialog", Dialog)
   .component("Divider", Divider)
   .component("InputText", InputText)
+  .component("MultiSelect", MultiSelect)
   .component("Panel", Panel)
   .component("ProgressSpinner", ProgressSpinner)
   .component("Sidebar", Sidebar)
