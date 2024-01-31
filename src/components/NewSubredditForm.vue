@@ -63,8 +63,8 @@ const searchSubreddit = async (event: { query: string }) => {
           @complete="searchSubreddit($event)"
           v-model="newSubreddit"
           inputId="ac"
-          style="width: 100%"
-          input-style="width: 100%"
+          class="w-full"
+          input-class="w-full"
         />
       </div>
       <div class="col-12">
