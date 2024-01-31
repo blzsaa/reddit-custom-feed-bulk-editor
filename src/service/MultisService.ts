@@ -90,4 +90,10 @@ export class MultisService {
       return a[1];
     });
   }
+
+  public async findSubredditsByPrefix(
+    subredditPrefix: string,
+  ): Promise<string[]> {
+    return this.redditApi.findSubredditsByPrefix(subredditPrefix);
+  }
 }

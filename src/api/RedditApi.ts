@@ -87,4 +87,21 @@ export class RedditApi {
       .put(`api/multi${multiPath}`, { searchParams: searchParams })
       .json();
   }
+
+  public async findSubredditsByPrefix(subredditPrefix: string) {
+    const response: {
+      data: { children: { data: { display_name: string } }[] };
+    } = await this.instance
+      .get("api/subreddit_autocomplete_v2", {
+        searchParams: {
+          query: subredditPrefix,
+          include_over_18: true,
+          include_profiles: false,
+          limit: 10,
+          typeahead_active: true,
+        },
+      })
+      .json();
+    return response.data.children.map((a) => a.data.display_name);
+  }
 }
