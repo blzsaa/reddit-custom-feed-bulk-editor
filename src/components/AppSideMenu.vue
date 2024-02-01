@@ -4,20 +4,17 @@ import ColumnSelector from "@/components/ColumnSelector.vue";
 import NewSubredditForm from "@/components/NewSubredditForm.vue";
 
 defineProps<{
-  columnOptions: { name: string; selected: boolean }[];
+  currentlySelectedColumns: string[];
+  allColumns: string[];
 }>();
 
 const menuStore = useMenuStore();
 
 const emit = defineEmits<{
-  updateSelectedColumns: [
-    newSelectedColumns: { name: string; selected: boolean }[],
-  ];
+  updateSelectedColumns: [newSelectedColumns: string[]];
 }>();
 
-function updateSelectedColumns(
-  newSelectedColumns: { name: string; selected: boolean }[],
-): void {
+function updateSelectedColumns(newSelectedColumns: string[]): void {
   emit("updateSelectedColumns", newSelectedColumns);
 }
 </script>
@@ -29,7 +26,8 @@ function updateSelectedColumns(
         <new-subreddit-form />
         <Divider />
         <column-selector
-          :column-options="columnOptions"
+          :currently-selected-columns="currentlySelectedColumns"
+          :all-columns="allColumns"
           @update-selected-columns="updateSelectedColumns"
         />
       </div>

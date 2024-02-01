@@ -3,7 +3,8 @@
     <app-header />
   </div>
   <app-side-menu
-    :column-options="selectedColumns"
+    :currently-selected-columns="currentlySelectedColumns"
+    :all-columns="multiFeedStore.nameOfMultis"
     @update-selected-columns="updateSelectedColumns"
   />
   <loading-mask
@@ -81,7 +82,7 @@
       </template>
     </Column>
     <Column
-      v-for="multi of selectedColumnsAsString"
+      v-for="multi of currentlySelectedColumns"
       :field="multi"
       :header="multi"
       :key="multi"
@@ -111,7 +112,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useMultiFeedStore } from "@/store/MultifeedStore";
+import { useNotificationStore } from "@/store/NotificationStore";
 import type { DatatableRow, LoadingStats } from "@/types";
+import { NotificationEvent } from "@/types";
 import LoadingMask from "@/components/LoadingMask.vue";
 import type {
   DataTableFilterMeta,
@@ -120,11 +123,11 @@ import type {
 import AppHeader from "@/components/AppHeader.vue";
 import AppSideMenu from "@/components/AppSideMenu.vue";
 
-const selectedColumnsAsString = ref<string[]>([]);
-const selectedColumns = ref<{ name: string; selected: boolean }[]>([]);
+const currentlySelectedColumns = ref<string[]>([]);
 const dataTableContent = ref<DatatableRow[]>([]);
 const filters = ref<DataTableFilterMeta | undefined>(undefined);
 const multiFeedStore = useMultiFeedStore();
+const notificationStore = useNotificationStore();
 const multiSortMeta = ref<DataTableSortMeta[]>([{ field: "name", order: 1 }]);
 const loadingState = ref<LoadingStats>({
   loadedSubreddits: 0,
@@ -151,13 +154,7 @@ onMounted(async () => {
   });
 
   dataTableContent.value = multiFeedStore.dataTableContent;
-  selectedColumns.value = multiFeedStore.nameOfMultis.map((multi) => ({
-    name: multi,
-    selected: true,
-  }));
-  selectedColumnsAsString.value = selectedColumns.value
-    .filter((col) => col.selected)
-    .map((col) => col.name);
+  currentlySelectedColumns.value = multiFeedStore.nameOfMultis;
   filters.value = multiFeedStore.filters;
 });
 
@@ -185,14 +182,12 @@ const appHeaderDiv = ref<HTMLElement | undefined>(undefined);
 function subredditLink(nameOfSubreddit: string) {
   return `${import.meta.env.VITE_REDDIT_URL}/r/${nameOfSubreddit}`;
 }
-function updateSelectedColumns(
-  newSelectedColumns: { name: string; selected: boolean }[],
-): void {
-  console.log(newSelectedColumns);
-  selectedColumns.value = newSelectedColumns;
-  selectedColumnsAsString.value = selectedColumns.value
-    .filter((col) => col.selected)
-    .map((col) => col.name);
+
+function updateSelectedColumns(newSelectedColumns: string[]): void {
+  currentlySelectedColumns.value = newSelectedColumns;
+  notificationStore.addNotification(
+    new NotificationEvent("success", "Updated which multis to show", ""),
+  );
 }
 </script>
 <style>
